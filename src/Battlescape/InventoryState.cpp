@@ -81,6 +81,7 @@ InventoryState::InventoryState(Game *game, bool tu, BattlescapeState *parent) : 
 	_btnRank = new InteractiveSurface(26, 23, 0, 0);
 	_selAmmo = new Surface(RuleInventory::HAND_W * RuleInventory::SLOT_W, RuleInventory::HAND_H * RuleInventory::SLOT_H, 272, 88);
 	_inv = new Inventory(_game, 320, 200, 0, 0);
+	if (!_tu) _btnLayMan = new InteractiveSurface(26, 22, 243, 75);
 
 	add(_bg);
 	add(_soldier);
@@ -101,6 +102,7 @@ InventoryState::InventoryState(Game *game, bool tu, BattlescapeState *parent) : 
 	add(_btnRank);
 	add(_selAmmo);
 	add(_inv);
+	if (!_tu) add(_btnLayMan);
 
 	centerAllSurfaces();
 
@@ -165,6 +167,15 @@ InventoryState::InventoryState(Game *game, bool tu, BattlescapeState *parent) : 
 	_txtReact->setVisible(_showMoreStatsInInventoryView && !_tu);
 	_txtPSkill->setVisible(_showMoreStatsInInventoryView && !_tu);
 	_txtPStr->setVisible(_showMoreStatsInInventoryView && !_tu);
+
+	if (!_tu)
+	{
+		Surface *laymanicon = _game->getResourcePack()->getSurface("LayMan");
+		laymanicon->setX(243);
+		laymanicon->setY(75);
+		laymanicon->blit(_bg);
+		_btnLayMan->onMouseClick((ActionHandler)&InventoryState::btnLayManClick);
+	}
 }
 
 /**
@@ -499,6 +510,14 @@ void InventoryState::invClick(Action *)
 		_txtAmmo->setText(s);
 	}
 	updateStats();
+}
+
+/**
+ * Brings up the Layout Manager screen.
+ * @param action Pointer to an action.
+ */
+void InventoryState::btnLayManClick(Action *)
+{
 }
 
 /**
