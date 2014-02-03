@@ -34,6 +34,7 @@
 #include "../Savegame/BattleUnit.h"
 #include "../Savegame/Soldier.h"
 #include "../Savegame/EquipmentLayoutItem.h"
+#include "LayoutManagerState.h"
 #include "Inventory.h"
 #include "../Ruleset/Ruleset.h"
 #include "../Ruleset/RuleItem.h"
