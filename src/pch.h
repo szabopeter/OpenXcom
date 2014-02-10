@@ -354,6 +354,7 @@
 #include "./Savegame/SerializationHelper.h"
 #include "./Savegame/Soldier.h"
 #include "./Savegame/AlienStrategy.h"
+#include "./Savegame/EquipmentLayout.h"
 #include "./Savegame/EquipmentLayoutItem.h"
 
 #endif
