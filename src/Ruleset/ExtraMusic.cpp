@@ -25,7 +25,7 @@ namespace OpenXcom
 /**
  * Creates a blank set of extra music data.
  */
-ExtraMusic::ExtraMusic() : _modIndex(0)
+ExtraMusic::ExtraMusic() : _media(""), _overrides(""), _extends(""), _modIndex(0)
 {
 }
 
@@ -48,17 +48,8 @@ void ExtraMusic::load(const YAML::Node &node, int modIndex)
 	  _overrides = node["overrides"].as<std::string>(_overrides);
 	if (node["extends"])
 	  _extends = node["extends"].as<std::string>(_extends);  
-	_terrains = node["terrain"].as< std::map<int, std::string> >(_terrains);
+	_terrains = node["terrain"].as< std::vector<std::string> >(_terrains);
 	_modIndex = modIndex;
-}
-
-/**
- * Gets the list of tracks defined by this mod.
- * @return The list of tracks defined by this mod.
- */
-std::map<int, std::string> *ExtraMusic::getMusic()
-{
-	return &_terrains;
 }
 
 /**
@@ -69,4 +60,22 @@ int ExtraMusic::getModIndex()
 {
 	return _modIndex;
 }
+
+std::string ExtraMusic::getOverridden()
+{
+  return _overrides;
+}
+std::string ExtraMusic::getExtended()
+{
+  return _extends;
+}
+bool ExtraMusic::hasTerrainSpecification()
+{
+  return !_terrains.empty();
+}
+std::vector<std::string> ExtraMusic::getTerrains()
+{
+  return _terrains;
+}
+	
 }

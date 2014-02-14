@@ -45,6 +45,7 @@
 #include "../Engine/Logger.h"
 #include "../Ruleset/ExtraSprites.h"
 #include "../Ruleset/ExtraSounds.h"
+#include "../Ruleset/ExtraMusic.h"
 
 namespace OpenXcom
 {
@@ -74,7 +75,7 @@ struct HairBleach
  * Initializes the resource pack by loading all the resources
  * contained in the original game folder.
  */
-XcomResourcePack::XcomResourcePack(std::vector<std::pair<std::string, ExtraSprites *> > extraSprites, std::vector<std::pair<std::string, ExtraSounds *> > extraSounds) : ResourcePack()
+XcomResourcePack::XcomResourcePack(std::vector<std::pair<std::string, ExtraSprites *> > extraSprites, std::vector<std::pair<std::string, ExtraSounds *> > extraSounds, std::vector<std::pair<std::string, ExtraMusic *> > extraMusic) : ResourcePack()
 {
 	// Load palettes
 	for (int i = 0; i < 5; ++i)
@@ -296,7 +297,29 @@ XcomResourcePack::XcomResourcePack(std::vector<std::pair<std::string, ExtraSprit
 		for (int i = 0; i < 17; ++i)
 		{
 			bool loaded = false;
+			// Load alternative digital track if there is an override
+			for (std::vector<std::pair<std::string, ExtraMusic *> >::const_iterator j = extraMusic.begin(); j != extraMusic.end(); ++j)
+			{
+			  ExtraMusic* musicRule = j->second;
+			// check if there is an entry which overrides something but does not specify the terrain
+			  if (!musicRule->hasTerrainSpecification())
+			  { 
+				std::string overridden = musicRule->getOverridden();
+				if (!overridden.empty() && overridden.compare(mus[i])==0)
+				{
+				  // Found one, let's use it!
+				  std::ostringstream mediaFilename;
+				  mediaFilename << "SOUND/" << j->first;
+				  _musics[mus[i]] = new Music();
+				  _musics[mus[i]]->load(CrossPlatform::getDataFile(mediaFilename.str()));
+				  loaded = true;
+				  break;
+				}
+			  }
+			}
+			
 			// Try digital tracks
+			if (!loaded)
 			for (int j = 0; j < 3; ++j)
 			{
 				std::ostringstream s;

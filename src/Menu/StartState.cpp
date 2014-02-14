@@ -437,7 +437,7 @@ void StartState::think()
 			_game->loadRuleset();
 			Log(LOG_INFO) << "Ruleset loaded successfully.";
 			Log(LOG_INFO) << "Loading resources...";
-			_game->setResourcePack(new XcomResourcePack(_game->getRuleset()->getExtraSprites(), _game->getRuleset()->getExtraSounds()));
+			_game->setResourcePack(new XcomResourcePack(_game->getRuleset()->getExtraSprites(), _game->getRuleset()->getExtraSounds(), _game->getRuleset()->getExtraMusic()));
 			Log(LOG_INFO) << "Resources loaded successfully.";
 			Log(LOG_INFO) << "Loading language...";
 			std::string defaultLang = "en-US";

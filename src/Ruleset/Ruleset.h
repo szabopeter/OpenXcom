@@ -56,6 +56,7 @@ class Base;
 class MCDPatch;
 class ExtraSprites;
 class ExtraSounds;
+class ExtraMusic;
 class ExtraStrings;
 
 /**
@@ -214,6 +215,8 @@ public:
 	std::vector<std::pair<std::string, ExtraSprites *> > getExtraSprites() const;
 	/// Gets the list of external Sounds.
 	std::vector<std::pair<std::string, ExtraSounds *> > getExtraSounds() const;
+	/// Gets the list of external music rules.
+	std::vector<std::pair<std::string, ExtraMusic *> > getExtraMusic() const;
 	/// Gets the list of external Strings.
 	std::map<std::string, ExtraStrings *> getExtraStrings() const;
 	/// Sorts all our lists according to their weight.

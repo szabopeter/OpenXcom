@@ -43,6 +43,7 @@
 #include "RuleManufacture.h"
 #include "ExtraSprites.h"
 #include "ExtraSounds.h"
+#include "ExtraMusic.h"
 #include "ExtraStrings.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Region.h"
@@ -1152,6 +1153,16 @@ std::vector<std::pair<std::string, ExtraSounds *> > Ruleset::getExtraSounds() co
 {
 	return _extraSounds;
 }
+
+/**
+ * Gets the list of external music rules.
+ * @return The list of external music rules.
+ */
+std::vector<std::pair<std::string, ExtraMusic *> > Ruleset::getExtraMusic() const
+{
+	return _extraMusic;
+}
+
 /**
  * Gets the list of external strings.
  * @return The list of external strings.

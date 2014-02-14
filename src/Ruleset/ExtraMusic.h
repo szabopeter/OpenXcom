@@ -30,10 +30,10 @@ namespace OpenXcom
 class ExtraMusic
 {
 private:
-	string _media;
-	string _overrides;
-	string _extends;
-	std::map<int, std::string> _terrains;
+	std::string _media;
+	std::string _overrides;
+	std::string _extends;
+	std::vector<std::string> _terrains;
 	int _modIndex;
 public:
 	/// Creates a blank external music set.
@@ -42,10 +42,12 @@ public:
 	virtual ~ExtraMusic();
 	/// Loads the data from yaml
 	void load(const YAML::Node &node, int modIndex);
-	/// Gets the list of sounds defined by this mod
-	std::map<int, std::string> *getMusic();
 	/// get the mod index for this external music set.
 	int getModIndex();
+	std::string getOverridden();
+	std::string getExtended();
+	bool hasTerrainSpecification();
+	std::vector<std::string> getTerrains();
 };
 
 }
