@@ -183,6 +183,10 @@ Ruleset::~Ruleset()
 	{
 		delete i->second;
 	}
+	for (std::vector< std::pair<std::string, ExtraMusic *> >::const_iterator i = _extraMusic.begin (); i != _extraMusic.end (); ++i)
+	{
+		delete i->second;
+	}
 	for (std::map<std::string, ExtraStrings *>::const_iterator i = _extraStrings.begin (); i != _extraStrings.end (); ++i)
 	{
 		delete i->second;
@@ -422,7 +426,7 @@ void Ruleset::loadFile(const std::string &filename)
 			_MCDPatchesIndex.push_back(type);
 		}
 	}
- 	for (YAML::const_iterator i = doc["extraSprites"].begin(); i != doc["extraSprites"].end(); ++i)
+	for (YAML::const_iterator i = doc["extraSprites"].begin(); i != doc["extraSprites"].end(); ++i)
 	{
 		std::string type = (*i)["type"].as<std::string>();
 		std::auto_ptr<ExtraSprites> extraSprites(new ExtraSprites());
@@ -430,13 +434,21 @@ void Ruleset::loadFile(const std::string &filename)
 		_extraSprites.push_back(std::make_pair(type, extraSprites.release()));
 		_extraSpritesIndex.push_back(type);
 	}
- 	for (YAML::const_iterator i = doc["extraSounds"].begin(); i != doc["extraSounds"].end(); ++i)
+	for (YAML::const_iterator i = doc["extraSounds"].begin(); i != doc["extraSounds"].end(); ++i)
 	{
 		std::string type = (*i)["type"].as<std::string>();
 		std::auto_ptr<ExtraSounds> extraSounds(new ExtraSounds());
 		extraSounds->load(*i, _modIndex);
 		_extraSounds.push_back(std::make_pair(type, extraSounds.release()));
 		_extraSoundsIndex.push_back(type);
+	}
+	for (YAML::const_iterator i = doc["extraMusic"].begin(); i != doc["extraMusic"].end(); ++i)
+	{
+		std::string media = (*i)["media"].as<std::string>();
+		std::auto_ptr<ExtraMusic> extraMusic(new ExtraMusic());
+		extraMusic->load(*i, _modIndex);
+		_extraMusic.push_back(std::make_pair(media, extraMusic.release()));
+		_extraMusicIndex.push_back(media);
 	}
  	for (YAML::const_iterator i = doc["extraStrings"].begin(); i != doc["extraStrings"].end(); ++i)
 	{
