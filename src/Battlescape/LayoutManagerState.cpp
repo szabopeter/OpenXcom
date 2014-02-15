@@ -72,8 +72,8 @@ LayoutManagerState::LayoutManagerState(Game *game, bool isBattlescapeGame) : Sta
 	_btnOk = new TextButton(36, 12, 276, 8);
 	_txtTitle = new Text(310, 17, 5, 5);
 	_txtMode = new Text(310, 9, 5, 24);
-	_btnToSoldier = new ToggleTextButton(310, 14, 5, 32, false);
-	_btnFromSoldier = new ToggleTextButton(310, 14, 5, 46, false);
+	_btnToSoldier = new ToggleTextButton(310, 14, 5, 32);
+	_btnFromSoldier = new ToggleTextButton(310, 14, 5, 46);
 	_txtSelectedLayout = new Text(99, 9, 5, 64);
 	_btnLayoutsUp = new ArrowButton(ARROW_BIG_UP, 13, 14, 86, 72);
 	_btnLayoutsDown = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 86, 72 + 6*14 - 14);
@@ -295,7 +295,7 @@ LayoutManagerState::~LayoutManagerState()
 void LayoutManagerState::addLayoutButton(const std::wstring &text, int &buttons)
 {
 	ToggleTextButton *btnLayout;
-	btnLayout = new ToggleTextButton(80, 14, 5, 72 + buttons*14, false);
+	btnLayout = new ToggleTextButton(80, 14, 5, 72 + buttons*14);
 	btnLayout->setColor(Palette::blockOffset(0)+4);
 	btnLayout->setInvertColor(Palette::blockOffset(1)-3);
 	btnLayout->onMousePress((ActionHandler)&LayoutManagerState::btnLayoutXPress, 0);
