@@ -36,8 +36,9 @@ class Ruleset;
 class RuleSoldier;
 class Armor;
 class Language;
-class EquipmentLayoutItem;
+class EquipmentLayout;
 class SoldierDeath;
+class SavedGame;
 
 /**
  * Represents a soldier hired by the player.
@@ -58,7 +59,7 @@ private:
 	int _missions, _kills, _recovery;
 	bool _recentlyPromoted, _psiTraining;
 	Armor *_armor;
-	std::vector<EquipmentLayoutItem*> _equipmentLayout;
+	EquipmentLayout *_equipmentLayout;
 	SoldierDeath *_death;
 public:
 	/// Creates a new soldier.
@@ -66,7 +67,7 @@ public:
 	/// Cleans up the soldier.
 	~Soldier();
 	/// Loads the soldier from YAML.
-	void load(const YAML::Node& node, const Ruleset *rule);
+	void load(const YAML::Node& node, const Ruleset *rule, SavedGame *save);
 	/// Saves the soldier to YAML.
 	YAML::Node save() const;
 	/// Gets the soldier's name.
@@ -120,7 +121,9 @@ public:
 	/// Heals wound recoveries.
 	void heal();
 	/// Gets the soldier's equipment-layout.
-	std::vector<EquipmentLayoutItem*> *getEquipmentLayout();
+	EquipmentLayout *getEquipmentLayout();
+	/// Sets the soldier's equipment-layout.
+	void setEquipmentLayout(EquipmentLayout *layout);
 	/// Trains a soldier's psychic stats
 	void trainPsi();
 	/// Trains a soldier's psionic abilities (anytimePsiTraining option).
