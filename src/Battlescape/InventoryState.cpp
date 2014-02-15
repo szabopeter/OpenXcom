@@ -33,6 +33,7 @@
 #include "../Savegame/BattleItem.h"
 #include "../Savegame/BattleUnit.h"
 #include "../Savegame/Soldier.h"
+#include "../Savegame/EquipmentLayout.h"
 #include "../Savegame/EquipmentLayoutItem.h"
 #include "LayoutManagerState.h"
 #include "Inventory.h"
@@ -176,6 +177,8 @@ InventoryState::InventoryState(Game *game, bool tu, BattlescapeState *parent) : 
 		laymanicon->setY(75);
 		laymanicon->blit(_bg);
 		_btnLayMan->onMouseClick((ActionHandler)&InventoryState::btnLayManClick);
+
+		if (_battleGame->getEquipByLayoutFailed()) _inv->showWarning(_game->getLanguage()->getString("STR_NOT_ENOUGH_EQUIPMENT_FOR_LAYOUT"));
 	}
 }
 
@@ -327,24 +330,20 @@ void InventoryState::saveEquipmentLayout()
 		// we need X-Com soldiers only
 		if (0 == (*i)->getGeoscapeSoldier()) continue;
 
-		std::vector<EquipmentLayoutItem*> *layoutItems = (*i)->getGeoscapeSoldier()->getEquipmentLayout();
+		EquipmentLayout *layout = (*i)->getGeoscapeSoldier()->getEquipmentLayout();
 
-		// clear the previous save
-		if (!layoutItems->empty())
-		{
-			for (std::vector<EquipmentLayoutItem*>::iterator j = layoutItems->begin(); j != layoutItems->end(); ++j)
-				delete *j;
-			layoutItems->clear();
-		}
+		// we want to process the soldiers whom have custom layout only
+		if (layout != 0 && layout->getId() != 0) continue;
 
 		// save the soldier's items
 		// note: with using getInventory() we are skipping the ammos loaded, (they're not owned) because we handle the loaded-ammos separately (inside)
+		layout = new EquipmentLayout(L"", 0);
 		for (std::vector<BattleItem*>::iterator j = (*i)->getInventory()->begin(); j != (*i)->getInventory()->end(); ++j)
 		{
 			std::string ammo;
 			if ((*j)->needsAmmo() && 0 != (*j)->getAmmoItem()) ammo = (*j)->getAmmoItem()->getRules()->getType();
 			else ammo = "NONE";
-			layoutItems->push_back(new EquipmentLayoutItem(
+			layout->getItems()->push_back(new EquipmentLayoutItem(
 				(*j)->getRules()->getType(),
 				(*j)->getSlot()->getId(),
 				(*j)->getSlotX(),
@@ -353,6 +352,7 @@ void InventoryState::saveEquipmentLayout()
 				(*j)->getExplodeTurn()
 			));
 		}
+		(*i)->getGeoscapeSoldier()->setEquipmentLayout(layout);
 	}
 
 }
