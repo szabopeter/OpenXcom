@@ -74,7 +74,7 @@ DebriefingState::DebriefingState(Game *game) : State(game), _region(0), _country
 {
 	// Restore the cursor in case something weird happened
 	_game->getCursor()->setVisible(true);
-	_containmentLimit = Options::getBool("alienContainmentLimitEnforced") ? 1 : 0;
+	_limitsEnforced = Options::getBool("storageLimitsEnforced") ? 1 : 0;
 	// Create objects
 	_window = new Window(this, 320, 200, 0, 0);
 	_btnOk = new TextButton(40, 12, 16, 180);
@@ -275,7 +275,7 @@ void DebriefingState::btnOkClick(Action *)
 			_game->pushState(new ErrorMessageState(_game, tr("STR_CONTAINMENT_EXCEEDED").arg(_base->getName()).c_str(), Palette::blockOffset(8)+5, "BACK01.SCR", 0));
 		}
 
-		if (!_manageContainment && Options::getBool("storageLimitEnforced") && _base->storesOverfull())
+		if (!_manageContainment && _limitsEnforced && _base->storesOverfull())
 		{
 			_game->pushState(new SellState(_game, _base, OPT_BATTLESCAPE));
 			_game->pushState(new ErrorMessageState(_game, tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), Palette::blockOffset(8)+5, "BACK01.SCR", 0));
@@ -699,7 +699,7 @@ void DebriefingState::prepareDebriefing()
 					else
 					{
 						base->getItems()->addItem(type, 1);
-						_manageContainment = base->getAvailableContainment() - (base->getUsedContainment() * _containmentLimit) < 0;
+						_manageContainment = base->getAvailableContainment() - (base->getUsedContainment() * _limitsEnforced) < 0;
 					}
 				}
 				else
@@ -1077,7 +1077,7 @@ void DebriefingState::recoverItems(std::vector<BattleItem*> *from, Base *base)
 							else
 							{
 								base->getItems()->addItem((*it)->getUnit()->getType(), 1);
-								_manageContainment = (base->getAvailableContainment() - (base->getUsedContainment() * _containmentLimit) < 0);
+								_manageContainment = (base->getAvailableContainment() - (base->getUsedContainment() * _limitsEnforced) < 0);
 							}
 						}
 						else

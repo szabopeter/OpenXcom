@@ -59,7 +59,7 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_changeValueByMouseWheel = Options::getInt("changeValueByMouseWheel");
 	_allowChangeListValuesByMouseWheel = (Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel);
 	bool canSellLiveAliens=Options::getBool("canSellLiveAliens");
-	_overfull = Options::getBool("storageLimitEnforced") && _base->storesOverfull();
+	_overfull = Options::getBool("storageLimitsEnforced") && _base->storesOverfull();
 
 	// Create objects
 	_window = new Window(this, 320, 200, 0, 0);

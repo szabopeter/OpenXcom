@@ -59,7 +59,7 @@ TransferItemsState::TransferItemsState(Game *game, Base *baseFrom, Base *baseTo)
 {
 	_changeValueByMouseWheel = Options::getInt("changeValueByMouseWheel");
 	_allowChangeListValuesByMouseWheel = (Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel);
-	_containmentLimit = Options::getBool("alienContainmentLimitEnforced");
+	_containmentLimit = Options::getBool("storageLimitsEnforced");
 	_canTransferCraftsWhileAirborne = Options::getBool("canTransferCraftsWhileAirborne");
 
 	// Create objects
@@ -630,7 +630,7 @@ void TransferItemsState::increaseByValue(int change)
 		float storesNeededPerItem = _game->getRuleset()->getItem(_items[getItemIndex(_sel)])->getSize();
 		float freeStores = (float)(_baseTo->getAvailableStores() - _baseTo->getUsedStores()) - _iQty;
 		int freeStoresForItem;
-		if ( AreSame(storesNeededPerItem, 0.f) ) { 
+		if ( AreSame(storesNeededPerItem, 0.f) ) {
 			freeStoresForItem = INT_MAX;
 		}
 		else

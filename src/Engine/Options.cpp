@@ -107,8 +107,7 @@ void createDefault()
 	// geoescape options
 	setBool("spendResearchedItems", false);
 	setBool("anytimePsiTraining", false);
-	setBool("alienContainmentLimitEnforced", false);
-	setBool("storageLimitEnforced", false);
+	setBool("storageLimitsEnforced", false);
 	setBool("canSellLiveAliens", false);
 	setBool("canTransferCraftsWhileAirborne", false); // When the craft can reach the destination base with its fuel
 	setBool("canManufactureMoreItemsPerHour", false);

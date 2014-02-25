@@ -55,8 +55,8 @@ ManageAlienContainmentState::ManageAlienContainmentState(Game *game, Base *base,
 {
 	_changeValueByMouseWheel = Options::getInt("changeValueByMouseWheel");
 	_allowChangeListValuesByMouseWheel = (Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel);
-	_containmentLimit = Options::getBool("alienContainmentLimitEnforced");
-	_overCrowded = _containmentLimit && _base->getAvailableContainment() < _base->getUsedContainment();
+	_limitsEnforced = Options::getBool("storageLimitsEnforced");
+	_overCrowded = _limitsEnforced && _base->getAvailableContainment() < _base->getUsedContainment();
 
 	for(std::vector<ResearchProject*>::const_iterator iter = _base->getResearch().begin (); iter != _base->getResearch().end (); ++iter)
 	{
@@ -233,7 +233,7 @@ void ManageAlienContainmentState::btnOkClick(Action *)
 	}
 	_game->popState();
 
-	if (Options::getBool("storageLimitEnforced") && _base->storesOverfull())
+	if (_limitsEnforced && _base->storesOverfull())
 	{
 		_game->pushState(new SellState(_game, _base, _origin));
 		if (_origin == OPT_BATTLESCAPE)
@@ -432,7 +432,7 @@ void ManageAlienContainmentState::updateStrings()
 
 	int aliens = _base->getUsedContainment() - _aliensSold - _researchedAliens;
 	int spaces = _base->getAvailableContainment() - _base->getUsedContainment() + _aliensSold;
-	bool enoughSpace = _containmentLimit? spaces >= 0 : true;
+	bool enoughSpace = _limitsEnforced? spaces >= 0 : true;
 
 	_btnCancel->setVisible(enoughSpace && !_overCrowded);
 	_btnOk->setVisible(enoughSpace);

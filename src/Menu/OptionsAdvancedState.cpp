@@ -66,7 +66,7 @@ OptionsAdvancedState::OptionsAdvancedState(Game *game, OptionsOrigin origin) : O
 	_txtTitle->setAlign(ALIGN_CENTER);
 	_txtTitle->setBig();
 	_txtTitle->setText(tr("STR_ADVANCED_OPTIONS"));
-	
+
 	_btnOk->setColor(Palette::blockOffset(8)+5);
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&OptionsAdvancedState::btnOkClick);
@@ -76,7 +76,7 @@ OptionsAdvancedState::OptionsAdvancedState(Game *game, OptionsOrigin origin) : O
 	_btnCancel->setText(tr("STR_CANCEL"));
 	_btnCancel->onMouseClick((ActionHandler)&OptionsAdvancedState::btnCancelClick);
 	_btnCancel->onKeyboardPress((ActionHandler)&OptionsAdvancedState::btnCancelClick, (SDLKey)Options::getInt("keyCancel"));
-	
+
 	_txtDescription->setColor(Palette::blockOffset(8)+10);
 	_txtDescription->setWordWrap(true);
 
@@ -85,7 +85,7 @@ OptionsAdvancedState::OptionsAdvancedState(Game *game, OptionsOrigin origin) : O
 	_lstOptions->setColor(Palette::blockOffset(8)+5);
 
 	_settingBoolSet.push_back(std::pair<std::string, bool>("aggressiveRetaliation", false));
-	_settingBoolSet.push_back(std::pair<std::string, bool>("alienContainmentLimitEnforced", false));
+	_settingBoolSet.push_back(std::pair<std::string, bool>("storageLimitsEnforced", false));
 	_settingBoolSet.push_back(std::pair<std::string, bool>("canSellLiveAliens", false));
 	_settingBoolSet.push_back(std::pair<std::string, bool>("allowAutoSellProduction", false));
 	_settingBoolSet.push_back(std::pair<std::string, bool>("allowBuildingQueue", false));
@@ -126,7 +126,7 @@ OptionsAdvancedState::OptionsAdvancedState(Game *game, OptionsOrigin origin) : O
 		_lstOptions->addRow(2, tr("STR_" + settingName).c_str(), setting.c_str());
 		++sel;
 	}
-	
+
 	_settingIntSet.push_back(std::pair<std::string, int>("battleNewPreviewPath", 0));
 	_settingIntSet.push_back(std::pair<std::string, int>("battleExplosionHeight", 0));
 	_settingIntSet.push_back(std::pair<std::string, int>("autosave", 0));
@@ -162,7 +162,7 @@ OptionsAdvancedState::OptionsAdvancedState(Game *game, OptionsOrigin origin) : O
  */
 OptionsAdvancedState::~OptionsAdvancedState()
 {
-	
+
 }
 
 /**
