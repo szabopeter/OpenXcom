@@ -63,7 +63,7 @@ private:
 	float _spaceChange;
 	Timer *_timerInc, *_timerDec;
 	int _changeValueByMouseWheel;
-	bool _allowChangeListValuesByMouseWheel;
+	bool _allowChangeListValuesByMouseWheel, _overfull;
 	/// Gets selected price.
 	int getPrice();
 	/// Gets selected quantity.
