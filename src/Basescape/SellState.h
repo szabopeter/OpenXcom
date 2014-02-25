@@ -20,6 +20,7 @@
 #define OPENXCOM_SELLSTATE_H
 
 #include "../Engine/State.h"
+#include "../Menu/OptionsBaseState.h"
 #include "PurchaseState.h"
 #include <vector>
 #include <string>
@@ -64,6 +65,7 @@ private:
 	Timer *_timerInc, *_timerDec;
 	int _changeValueByMouseWheel;
 	bool _allowChangeListValuesByMouseWheel, _overfull;
+	Uint8 _color, _color2, _color3, _colorAmmo;
 	/// Gets selected price.
 	int getPrice();
 	/// Gets selected quantity.
@@ -74,7 +76,7 @@ private:
 	void updateIndex(size_t &index, std::vector<std::string> &list, int change);
 public:
 	/// Creates the Sell state.
-	SellState(Game *game, Base *base);
+	SellState(Game *game, Base *base, OptionsOrigin origin = OPT_GEOSCAPE);
 	/// Cleans up the Sell state.
 	~SellState();
 	/// Runs the timers.
