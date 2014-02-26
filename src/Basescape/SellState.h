@@ -61,7 +61,7 @@ private:
 	unsigned int _sel;
 	size_t _selTab;
 	int _total;
-	float _spaceChange;
+	int _spaceChange;
 	Timer *_timerInc, *_timerDec;
 	int _changeValueByMouseWheel;
 	bool _allowChangeListValuesByMouseWheel, _overfull;
