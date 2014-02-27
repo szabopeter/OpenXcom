@@ -36,6 +36,8 @@ class Timer;
 class Base;
 class Soldier;
 class Craft;
+class Transfer;
+class ItemContainer;
 
 /**
  * Sell/Sack screen that lets the player sell
@@ -58,13 +60,14 @@ private:
 	std::vector< std::vector<std::string> > _items;
 	std::vector<std::string> _tabs;
 	std::vector<TextList*> _lists;
+	std::vector<ItemContainer*> _containers;
 	unsigned int _sel;
 	size_t _selTab;
 	int _total;
 	int _spaceChange;
 	Timer *_timerInc, *_timerDec;
 	int _changeValueByMouseWheel;
-	bool _allowChangeListValuesByMouseWheel, _overfull;
+	bool _allowChangeListValuesByMouseWheel, _overfull, _haveTransfers;
 	Uint8 _color, _color2, _color3, _colorAmmo;
 	/// Gets selected price.
 	int getPrice();
