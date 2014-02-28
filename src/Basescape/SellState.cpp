@@ -62,7 +62,7 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_allowChangeListValuesByMouseWheel = (Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel);
 	bool canSellLiveAliens=Options::getBool("canSellLiveAliens");
 	_overfull = Options::getBool("storageLimitsEnforced") && _base->storesOverfull();
-	bool _haveTransfers = false;
+	_haveTransfers = false;
 
 	// Create objects
 	_window = new Window(this, 320, 200, 0, 0);
@@ -240,6 +240,21 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 				_containers.push_back(tItems);
 			}
 		}
+
+		if (!_base->getCrafts()->empty())
+		{
+			for (std::vector<Craft*>::iterator c = _base->getCrafts()->begin(); c != _base->getCrafts()->end(); ++c)
+			{
+				if ((*c)->getItems()->getTotalQuantity() > 0)
+				{
+					TextList *lstCraftInventory = new TextList(288, 104, 8, 62);
+					add(lstCraftInventory);
+					_lists.push_back(lstCraftInventory);
+					_tabs.push_back(Language::wstrToUtf8((*c)->getName(_game->getLanguage())));
+				}
+				_containers.push_back((*c)->getItems());
+			}
+		}
 	}
 
 	for (size_t i = 0; i < _lists.size(); i++)
@@ -278,7 +293,7 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	}
 	for (std::vector<Craft*>::iterator i = _base->getCrafts()->begin(); i != _base->getCrafts()->end(); ++i)
 	{
-		if ((*i)->getStatus() != "STR_OUT")
+		if (!_overfull && (*i)->getStatus() != "STR_OUT")
 		{
 			_quantities[TAB_CRAFT].push_back(0);
 			_crafts.push_back(*i);
@@ -348,7 +363,6 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 		}
 	}
 
-
 	if (_overfull)
 	{
 		if (_haveTransfers)
@@ -382,8 +396,37 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 				}
 			}
 		}
+
+		int craftIndex = _haveTransfers ? 4 : 3;
+
+		for (size_t tab = craftIndex; tab < _lists.size(); tab++)
+		{
+			for (std::vector<std::string>::const_iterator i = items.begin(); i != items.end(); ++i)
+			{
+				int qty = _containers[tab]->getItem(*i);
+
+				if (qty > 0 && (canSellLiveAliens || !_game->getRuleset()->getItem(*i)->getAlien()))
 				{
-					_lists[TAB_TRANSFERS]->addRow(5, item.c_str(), ss.str().c_str(), L"0", Text::formatFunding(rule->getSellCost()).c_str(), ss2.str().c_str());
+					RuleItem *rule = _game->getRuleset()->getItem(*i);
+					std::wstringstream ss, ss2;
+					ss << qty;
+					ss2 << qty * rule->getSize();
+
+					std::wstring item = tr(*i);
+
+					_quantities[tab].push_back(0);
+					_items[tab].push_back(*i);
+
+					if (rule->getBattleType() == BT_AMMO || (rule->getBattleType() == BT_NONE && rule->getClipSize() > 0))
+					{
+						item.insert(0, L"  ");
+						_lists[tab]->addRow(5, item.c_str(), ss.str().c_str(), L"0", Text::formatFunding(rule->getSellCost()).c_str(), ss2.str().c_str());
+						_lists[tab]->setRowColor(_quantities[tab].size() - 1, _colorAmmo);
+					}
+					else
+					{
+						_lists[tab]->addRow(5, item.c_str(), ss.str().c_str(), L"0", Text::formatFunding(rule->getSellCost()).c_str(), ss2.str().c_str());
+					}
 				}
 			}
 		}
@@ -530,14 +573,9 @@ void SellState::btnOkClick(Action *)
 
 		for (unsigned int i = 0; i < _quantities[tab].size(); ++i)
 		{
-
 			if (_quantities[tab][i] > 0)
 			{
-				if (tab == TAB_ITEMS)
-				{
-					_base->getItems()->removeItem(_items[tab][i], _quantities[tab][i]);
-				}
-				else if (tab == TAB_TRANSFERS)
+				if (_haveTransfers && tab == TAB_TRANSFERS)
 				{
 					for (std::vector<Transfer*>::iterator j = _base->getTransfers()->begin(); j != _base->getTransfers()->end() && _quantities[tab][i] != 0 ;)
 					{
@@ -568,6 +606,10 @@ void SellState::btnOkClick(Action *)
 						else
 							j++;
 					}
+				}
+				else
+				{
+					_containers[tab]->removeItem(_items[tab][i], _quantities[tab][i]);
 				}
 			}
 		}
@@ -605,6 +647,14 @@ void SellState::updateIndex(size_t &index, std::vector<std::string> &list, int c
 	else
 	{
 		index += change;
+	}
+	if (_overfull)
+	{
+		// Soldiers might have armor; do not sack right now.
+		if (index == TAB_PERSONNEL)
+		{
+			updateIndex(index, list, change);
+		}
 	}
 }
 
