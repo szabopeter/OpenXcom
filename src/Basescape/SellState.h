@@ -79,6 +79,8 @@ private:
 	void updateIndex(size_t &index, std::vector<std::string> &list, int change);
 	/// Adds an item row to a textlist.
 	void addRow(ItemContainer *container, std::string item, int tab);
+	/// Switches the currently displayed tab.
+	void switchTab(int change);
 public:
 	/// Creates the Sell state.
 	SellState(Game *game, Base *base, OptionsOrigin origin = OPT_GEOSCAPE);

@@ -79,10 +79,10 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 
 	_txtSpaceUsed = new Text(150, 8, 160, 34);
 
-	_txtItem = new Text(130, 9, 30, 50);
+	_txtItem = new Text(80, 9, 30, 50);
 	_txtQuantity = new Text(54, 9, 112, 50);
-	_txtSell = new Text(96, 9, 172, 50);
-	_txtValue = new Text(40, 9, 225, 50);
+	_txtSell = new Text(54, 9, 168, 50);
+	_txtValue = new Text(40, 9, 224, 50);
 	_txtSpace = new Text(40, 9, 268, 50);
 
 	_lstPersonnel = new TextList(288, 104, 8, 62);
@@ -134,7 +134,7 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_window->setBackground(_game->getResourcePack()->getSurface("BACK13.SCR"));
 
 	_btnOk->setColor(_color);
-	_btnOk->setText(_overfull ? tr("STR_SELL") : tr("STR_SELL_SACK"));
+	_btnOk->setText(_overfull ? tr("STR_SELL_UC") : tr("STR_SELL_SACK"));
 	_btnOk->onMouseClick((ActionHandler)&SellState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&SellState::btnOkClick, (SDLKey)Options::getInt("keyOk"));
 
@@ -177,10 +177,12 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_txtItem->setText(tr("STR_ITEM_LC"));
 
 	_txtQuantity->setColor(_color3);
+	_txtQuantity->setAlign(ALIGN_CENTER);
 	_txtQuantity->setText(tr("STR_QUANTITY"));
 
 	_txtSell->setColor(_color3);
-	_txtSell->setText(tr("STR_SELL_SACK"));
+	_txtSell->setAlign(ALIGN_CENTER);
+	_txtSell->setText(_overfull ? tr("STR_SELL") : tr("STR_SELL_SACK"));
 
 	_txtValue->setColor(_color3);
 	_txtValue->setText(tr("STR_VALUE"));
@@ -250,8 +252,8 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 					add(lstCraftInventory);
 					_lists.push_back(lstCraftInventory);
 					_tabs.push_back(Language::wstrToUtf8((*c)->getName(_game->getLanguage())));
+					_containers.push_back((*c)->getItems());
 				}
-				_containers.push_back((*c)->getItems());
 			}
 		}
 	}
@@ -265,15 +267,15 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	for (std::vector<TextList*>::iterator i = _lists.begin(); i != _lists.end(); ++i)
 	{
 		(*i)->setColor(_color);
-		(*i)->setArrowColumn(145, ARROW_VERTICAL);
-		(*i)->setColumns(5, 120, 60, 28, 56, 22);
+		(*i)->setArrowColumn(149, ARROW_VERTICAL);
+		(*i)->setColumns(5, 124, 60, 28, 52, 22);
 		(*i)->setSelectable(true);
 		(*i)->setBackground(_window);
 		(*i)->setMargin(2);
 		(*i)->setVisible(false);
 	}
 
-	_lstPersonnel->setColumns(4, 120, 60, 28, 56);
+	_lstPersonnel->setColumns(4, 124, 60, 28, 52);
 
 	// start on items tab
 	_selTab = TAB_ITEMS;
@@ -613,6 +615,40 @@ void SellState::updateIndex(size_t &index, std::vector<std::string> &list, int c
 }
 
 /**
+ * Switches the currently displayed tab.
+ * @param direction Direction to move through tabs, 1 (forward) or -1 (back).
+ */
+void SellState::switchTab(int direction)
+{
+	_selList->onLeftArrowPress(0);
+	_selList->onLeftArrowRelease(0);
+	_selList->onLeftArrowClick(0);
+	_selList->onRightArrowPress(0);
+	_selList->onRightArrowRelease(0);
+	_selList->onRightArrowClick(0);
+	_selList->onMousePress(0);
+
+	updateIndex(_selTab, _tabs, direction);
+
+	_btnTab->setText(tr(_tabs[_selTab]));
+	_selList = _lists[_selTab];
+
+	_selList->onLeftArrowPress((ActionHandler)&SellState::lstItemsLeftArrowPress);
+	_selList->onLeftArrowRelease((ActionHandler)&SellState::lstItemsLeftArrowRelease);
+	_selList->onLeftArrowClick((ActionHandler)&SellState::lstItemsLeftArrowClick);
+	_selList->onRightArrowPress((ActionHandler)&SellState::lstItemsRightArrowPress);
+	_selList->onRightArrowRelease((ActionHandler)&SellState::lstItemsRightArrowRelease);
+	_selList->onRightArrowClick((ActionHandler)&SellState::lstItemsRightArrowClick);
+	_selList->onMousePress((ActionHandler)&SellState::lstItemsMousePress);
+
+	for(std::vector<TextList*>::iterator it = _lists.begin(); it != _lists.end(); ++it)
+	{
+		(*it)->setVisible(false);
+	}
+	_selList->setVisible(true);
+}
+
+/**
  * Makes the the next list visible.
  * @param action Pointer to an action.
  */
@@ -620,20 +656,12 @@ void SellState::btnTabClick(Action *action)
 {
 	if (action->getDetails()->button.button == SDL_BUTTON_LEFT)
 	{
-		updateIndex(_selTab, _tabs, 1);
+		switchTab(1);
 	}
 	else if (action->getDetails()->button.button == SDL_BUTTON_RIGHT)
 	{
-		updateIndex(_selTab, _tabs, -1);
+		switchTab(-1);
 	}
-	_btnTab->setText(tr(_tabs[_selTab]));
-	_selList = _lists[_selTab];
-
-	for(std::vector<TextList*>::iterator it = _lists.begin(); it != _lists.end(); ++it)
-	{
-		(*it)->setVisible(false);
-	}
-	_selList->setVisible(true);
 }
 
 /**
@@ -642,14 +670,7 @@ void SellState::btnTabClick(Action *action)
  */
 void SellState::btnPrevClick(Action *)
 {
-	updateIndex(_selTab, _tabs, -1);
-	_btnTab->setText(tr(_tabs[_selTab]));
-	_selList = _lists[_selTab];
-	for(std::vector<TextList*>::iterator it = _lists.begin(); it != _lists.end(); ++it)
-	{
-		(*it)->setVisible(false);
-	}
-	_selList->setVisible(true);
+	switchTab(-1);
 }
 
 /**
@@ -658,14 +679,7 @@ void SellState::btnPrevClick(Action *)
  */
 void SellState::btnNextClick(Action *)
 {
-	updateIndex(_selTab, _tabs, 1);
-	_btnTab->setText(tr(_tabs[_selTab]));
-	_selList = _lists[_selTab];
-	for(std::vector<TextList*>::iterator it = _lists.begin(); it != _lists.end(); ++it)
-	{
-		(*it)->setVisible(false);
-	}
-	_selList->setVisible(true);
+	switchTab(1);
 }
 
 /**
