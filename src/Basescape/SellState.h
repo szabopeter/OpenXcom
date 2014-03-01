@@ -67,7 +67,7 @@ private:
 	int _spaceChange;
 	Timer *_timerInc, *_timerDec;
 	int _changeValueByMouseWheel;
-	bool _allowChangeListValuesByMouseWheel, _overfull, _haveTransfers;
+	bool _allowChangeListValuesByMouseWheel, _canSellLiveAliens, _overfull, _haveTransferItems;
 	Uint8 _color, _color2, _color3, _colorAmmo;
 	/// Gets selected price.
 	int getPrice();
@@ -77,6 +77,8 @@ private:
 	int getItemIndex(unsigned selected) const;
 
 	void updateIndex(size_t &index, std::vector<std::string> &list, int change);
+	/// Adds an item row to a textlist.
+	void addRow(ItemContainer *container, std::string item, int tab);
 public:
 	/// Creates the Sell state.
 	SellState(Game *game, Base *base, OptionsOrigin origin = OPT_GEOSCAPE);
