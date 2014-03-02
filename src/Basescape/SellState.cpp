@@ -45,7 +45,6 @@
 #include "../Ruleset/RuleCraftWeapon.h"
 #include "../Engine/Timer.h"
 #include "../Engine/Options.h"
-#include "../aresame.h"
 #include "PurchaseState.h"
 
 namespace OpenXcom
@@ -59,8 +58,8 @@ namespace OpenXcom
 SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game), _base(base), _soldiers(), _crafts(), _sel(0), _total(0), _spaceChange(0), _haveTransferItems(false)
 {
 	_changeValueByMouseWheel = Options::getInt("changeValueByMouseWheel");
-	_allowChangeListValuesByMouseWheel = (Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel);
-	_canSellLiveAliens =Options::getBool("canSellLiveAliens");
+	_allowChangeListValuesByMouseWheel = Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel;
+	_canSellLiveAliens = Options::getBool("canSellLiveAliens");
 	_overfull = Options::getBool("storageLimitsEnforced") && _base->storesOverfull();
 
 	// Create objects
@@ -198,15 +197,6 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_txtSpaceUsed->setText(ss5.str());
 	_txtSpaceUsed->setText(tr("STR_SPACE_USED").arg(ss5.str()));
 
-	_lstItems->setAllowScrollOnArrowButtons(!_allowChangeListValuesByMouseWheel);
-	_lstItems->onLeftArrowPress((ActionHandler)&SellState::lstItemsLeftArrowPress);
-	_lstItems->onLeftArrowRelease((ActionHandler)&SellState::lstItemsLeftArrowRelease);
-	_lstItems->onLeftArrowClick((ActionHandler)&SellState::lstItemsLeftArrowClick);
-	_lstItems->onRightArrowPress((ActionHandler)&SellState::lstItemsRightArrowPress);
-	_lstItems->onRightArrowRelease((ActionHandler)&SellState::lstItemsRightArrowRelease);
-	_lstItems->onRightArrowClick((ActionHandler)&SellState::lstItemsRightArrowClick);
-	_lstItems->onMousePress((ActionHandler)&SellState::lstItemsMousePress);
-
 	_lists.push_back(_lstPersonnel);
 	_tabs.push_back("STR_PERSONNEL");
 	_containers.push_back(0);
@@ -274,14 +264,13 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 		(*i)->setMargin(2);
 		(*i)->setVisible(false);
 	}
-
 	_lstPersonnel->setColumns(4, 124, 60, 28, 52);
 
 	// start on items tab
 	_selTab = TAB_ITEMS;
-	_btnTab->setText(tr("STR_ITEMS"));
 	_selList = _lstItems;
-	_selList->setVisible(true);
+	_selList->setAllowScrollOnArrowButtons(!_allowChangeListValuesByMouseWheel);
+	switchTab(0);
 
 	for (std::vector<Soldier*>::iterator i = _base->getSoldiers()->begin(); i != _base->getSoldiers()->end(); ++i)
 	{
@@ -352,7 +341,6 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 		}
 
 		int craftIndex = _haveTransferItems ? 4 : 3;
-
 		for (size_t tab = craftIndex; tab < _lists.size(); tab++)
 		{
 			for (std::vector<std::string>::const_iterator i = items.begin(); i != items.end(); ++i)
@@ -366,6 +354,26 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_timerInc->onTimer((StateHandler)&SellState::increase);
 	_timerDec = new Timer(250);
 	_timerDec->onTimer((StateHandler)&SellState::decrease);
+}
+
+/**
+ *
+ */
+SellState::~SellState()
+{
+	delete _timerInc;
+	delete _timerDec;
+}
+
+/**
+ * Runs the arrow timers.
+ */
+void SellState::think()
+{
+	State::think();
+
+	_timerInc->think(this, 0);
+	_timerDec->think(this, 0);
 }
 
 /**
@@ -400,26 +408,6 @@ void SellState::addRow(ItemContainer *container, std::string item, int tab)
 			_lists[tab]->addRow(5, name.c_str(), ss.str().c_str(), L"0", Text::formatFunding(rule->getSellCost()).c_str(), ss2.str().c_str());
 		}
 	}
-}
-
-/**
- *
- */
-SellState::~SellState()
-{
-	delete _timerInc;
-	delete _timerDec;
-}
-
-/**
- * Runs the arrow timers.
- */
-void SellState::think()
-{
-	State::think();
-
-	_timerInc->think(this, 0);
-	_timerDec->think(this, 0);
 }
 
 /**
@@ -616,7 +604,7 @@ void SellState::updateIndex(size_t &index, std::vector<std::string> &list, int c
 
 /**
  * Switches the currently displayed tab.
- * @param direction Direction to move through tabs, 1 (forward) or -1 (back).
+ * @param direction Direction to move through tabs, 1 (forward), -1 (back), or 0 (setup current tab).
  */
 void SellState::switchTab(int direction)
 {
@@ -627,12 +615,13 @@ void SellState::switchTab(int direction)
 	_selList->onRightArrowRelease(0);
 	_selList->onRightArrowClick(0);
 	_selList->onMousePress(0);
+	_selList->setVisible(false);
 
 	updateIndex(_selTab, _tabs, direction);
 
 	_btnTab->setText(tr(_tabs[_selTab]));
-	_selList = _lists[_selTab];
 
+	_selList = _lists[_selTab];
 	_selList->onLeftArrowPress((ActionHandler)&SellState::lstItemsLeftArrowPress);
 	_selList->onLeftArrowRelease((ActionHandler)&SellState::lstItemsLeftArrowRelease);
 	_selList->onLeftArrowClick((ActionHandler)&SellState::lstItemsLeftArrowClick);
@@ -640,16 +629,11 @@ void SellState::switchTab(int direction)
 	_selList->onRightArrowRelease((ActionHandler)&SellState::lstItemsRightArrowRelease);
 	_selList->onRightArrowClick((ActionHandler)&SellState::lstItemsRightArrowClick);
 	_selList->onMousePress((ActionHandler)&SellState::lstItemsMousePress);
-
-	for(std::vector<TextList*>::iterator it = _lists.begin(); it != _lists.end(); ++it)
-	{
-		(*it)->setVisible(false);
-	}
 	_selList->setVisible(true);
 }
 
 /**
- * Makes the the next list visible.
+ * Makes the the next tab visible.
  * @param action Pointer to an action.
  */
 void SellState::btnTabClick(Action *action)
@@ -665,7 +649,7 @@ void SellState::btnTabClick(Action *action)
 }
 
 /**
- * Goes to the previous list.
+ * Goes to the previous tab.
  * @param action Pointer to an action.
  */
 void SellState::btnPrevClick(Action *)
@@ -674,7 +658,7 @@ void SellState::btnPrevClick(Action *)
 }
 
 /**
- * Goes to the next list.
+ * Goes to the next tab.
  * @param action Pointer to an action.
  */
 void SellState::btnNextClick(Action *)

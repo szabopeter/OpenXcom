@@ -1124,7 +1124,6 @@ void DebriefingState::recoverItems(std::vector<BattleItem*> *from, Base *base)
 			}
 		}
 	}
-
 }
 
 }

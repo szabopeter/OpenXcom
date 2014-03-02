@@ -47,13 +47,10 @@ class SellState : public State
 {
 private:
 	Base *_base;
-	TextButton *_btnOk, *_btnCancel;
-	TextButton *_btnTab;
-	TextButton *_btnPrev, *_btnNext;
+	TextButton *_btnOk, *_btnCancel, *_btnTab, *_btnPrev, *_btnNext;
 	Window *_window;
 	Text *_txtTitle, *_txtSales, *_txtFunds, *_txtItem, *_txtQuantity, *_txtSell, *_txtValue, *_txtSpace, *_txtSpaceUsed;
-	TextList *_lstPersonnel, *_lstCraft, *_lstItems;
-	TextList *_selList;
+	TextList *_lstPersonnel, *_lstCraft, *_lstItems, *_selList;
 	std::vector< std::vector<int> > _quantities;
 	std::vector<Soldier*> _soldiers;
 	std::vector<Craft*> _crafts;
@@ -63,8 +60,7 @@ private:
 	std::vector<ItemContainer*> _containers;
 	unsigned int _sel;
 	size_t _selTab;
-	int _total;
-	int _spaceChange;
+	int _total, _spaceChange;
 	Timer *_timerInc, *_timerDec;
 	int _changeValueByMouseWheel;
 	bool _allowChangeListValuesByMouseWheel, _canSellLiveAliens, _overfull, _haveTransferItems;
@@ -75,9 +71,9 @@ private:
 	int getQuantity();
 	/// Gets the index of selected item.
 	int getItemIndex(unsigned selected) const;
-
+	/// Updates the tab index.
 	void updateIndex(size_t &index, std::vector<std::string> &list, int change);
-	/// Adds an item row to a textlist.
+	/// Adds an item row to a tab.
 	void addRow(ItemContainer *container, std::string item, int tab);
 	/// Switches the currently displayed tab.
 	void switchTab(int change);

@@ -43,21 +43,17 @@ class PurchaseState : public State
 {
 private:
 	Base *_base;
-
-	TextButton *_btnOk, *_btnCancel, *_btnTab;
-	TextButton *_btnPrev, *_btnNext;
+	TextButton *_btnOk, *_btnCancel, *_btnTab, *_btnPrev, *_btnNext;
 	Window *_window;
 	Text *_txtTitle, *_txtFunds, *_txtPurchases, *_txtItem, *_txtCost, *_txtQuantity, *_txtInStorage;;
-	TextList *_lstPersonnel, *_lstCraft, *_lstItems;
-	TextList *_selList;
+	TextList *_lstPersonnel, *_lstCraft, *_lstItems, *_selList;
 	std::vector<std::string> _crafts, _items, _craftItems;
 	std::vector<std::string> _tabs;
 	std::vector<TextList*> _lists;
 	std::vector<int> _qtys, _qtysPersonnel, _qtysCraft;
 	unsigned int _sel;
 	size_t _selTab;
-	int _total, _pQty, _cQty;
-	int _iQty;
+	int _total, _pQty, _cQty, _iQty;
 	Timer *_timerInc, *_timerDec;
 	int _changeValueByMouseWheel;
 	bool _allowChangeListValuesByMouseWheel;
@@ -65,8 +61,10 @@ private:
 	int getPrice();
 	/// Is it excluded in the options file?
 	bool isExcluded(std::string item);
-
+	/// Updates the tab index.
 	void updateIndex(size_t &index, std::vector<std::string> &list, int change);
+	/// Switches the currently displayed tab.
+	void switchTab(int change);
 public:
 	/// Creates the Purchase state.
 	PurchaseState(Game *game, Base *base);
