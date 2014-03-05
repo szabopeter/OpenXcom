@@ -59,7 +59,7 @@ TransferItemsState::TransferItemsState(Game *game, Base *baseFrom, Base *baseTo)
 {
 	_changeValueByMouseWheel = Options::getInt("changeValueByMouseWheel");
 	_allowChangeListValuesByMouseWheel = (Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel);
-	_containmentLimit = Options::getBool("storageLimitsEnforced");
+	_storageLimitEnforced = Options::getBool("storageLimitsEnforced");
 	_canTransferCraftsWhileAirborne = Options::getBool("canTransferCraftsWhileAirborne");
 
 	// Create objects
@@ -588,6 +588,12 @@ void TransferItemsState::increaseByValue(int change)
 			_game->pushState(new ErrorMessageState(_game, "STR_NO_FREE_ACCOMODATION_CREW", Palette::blockOffset(15)+1, "BACK13.SCR", 0));
 			return;
 		}
+		if (_storageLimitEnforced && _baseTo->storesOverfull(_iQty + (int)(craft->getItems()->getTotalSize(_game->getRuleset()) * 10 + 0.5)))
+		{
+			_timerInc->stop();
+			_game->pushState(new ErrorMessageState(_game, "STR_NOT_ENOUGH_STORE_SPACE_FOR_CRAFT", Palette::blockOffset(15)+1, "BACK13.SCR", 0));
+			return;
+		}
 	}
 	if (TRANSFER_ITEM == selType && !selItem->getAlien()
 		&& _baseTo->storesOverfull((int)(selItem->getSize() * 10 + 0.5) + _iQty))
@@ -597,7 +603,7 @@ void TransferItemsState::increaseByValue(int change)
 		return;
 	}
 	if (TRANSFER_ITEM == selType && selItem->getAlien()
-		&& _containmentLimit * _aQty + 1 > _baseTo->getAvailableContainment() - _containmentLimit * _baseTo->getUsedContainment())
+		&& _storageLimitEnforced * _aQty + 1 > _baseTo->getAvailableContainment() - _storageLimitEnforced * _baseTo->getUsedContainment())
 	{
 		_timerInc->stop();
 		_game->pushState(new ErrorMessageState(_game, "STR_NO_ALIEN_CONTAINMENT_FOR_TRANSFER", Palette::blockOffset(15)+1, "BACK13.SCR", 0));
@@ -648,7 +654,7 @@ void TransferItemsState::increaseByValue(int change)
 	// Live Aliens count
 	else if (TRANSFER_ITEM == selType && selItem->getAlien() )
 	{
-		int freeContainment = _containmentLimit ? _baseTo->getAvailableContainment() - _baseTo->getUsedContainment() - _aQty : INT_MAX;
+		int freeContainment = _storageLimitEnforced ? _baseTo->getAvailableContainment() - _baseTo->getUsedContainment() - _aQty : INT_MAX;
 		change = std::min(std::min(freeContainment, getQuantity() - _transferQty[_sel]), change);
 		_aQty += change;
 		_baseQty[_sel] -= change;
