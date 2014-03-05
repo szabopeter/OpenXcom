@@ -541,14 +541,13 @@ int Base::getAvailableQuarters() const
 }
 
 /**
- * Returns the amount of stores used up
- * by equipment in the base,
+ * Returns the amount of stores used up by equipment in the base,
  * rounded down to the nearest whole number.
  * @return Storage space.
  */
 int Base::getUsedStores()
 {
-	return (int)floor(getExactUsedStores());
+	return (int)floor(getExactUsedStores() + 0.05);
 }
 
 /**
