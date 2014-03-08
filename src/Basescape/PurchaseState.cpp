@@ -66,9 +66,9 @@ PurchaseState::PurchaseState(Game *game, Base *base) : State(game), _base(base),
 	_txtFunds = new Text(150, 9, 10, 24);
 	_txtPurchases = new Text(150, 9, 160, 24);
 
-	_btnPrev = new TextButton(28, 14, 8, 34);
-	_btnTab = new TextButton(56, 14, 38, 34);
-	_btnNext = new TextButton(28, 14, 96, 34);
+	_btnPrev = new TextButton(25, 14, 8, 35);
+	_btnTab = new TextButton(72, 14, 35, 35);
+	_btnNext = new TextButton(25, 14, 109, 35);
 
 	_txtItem = new Text(130, 9, 30, 50);
 	_txtCost = new Text(65, 18, 139, 42);

@@ -72,21 +72,21 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_txtSales = new Text(150, 9, 10, 24);
 	_txtFunds = new Text(150, 9, 160, 24);
 
-	_btnPrev = new TextButton(20, 14, 8, 34);
-	_btnTab = new TextButton(88, 14, 30, 34);
-	_btnNext = new TextButton(20, 14, 120, 34);
+	_btnPrev = new TextButton(25, 14, 8, 35);
+	_btnTab = new TextButton(72, 14, 35, 35);
+	_btnNext = new TextButton(25, 14, 109, 35);
 
 	_txtSpaceUsed = new Text(150, 8, 160, 34);
 
-	_txtItem = new Text(80, 9, 30, 50);
-	_txtQuantity = new Text(54, 9, 112, 50);
-	_txtSell = new Text(54, 9, 168, 50);
-	_txtValue = new Text(40, 9, 224, 50);
-	_txtSpace = new Text(40, 9, 268, 50);
+	_txtItem = new Text(80, 9, 30, 53);
+	_txtQuantity = new Text(54, 9, 120, 53);
+	_txtSell = new Text(54, 19, 178, 42);
+	_txtValue = new Text(40, 9, 234, 53);
+	_txtSpace = new Text(40, 9, 273, 53);
 
-	_lstPersonnel = new TextList(288, 104, 8, 62);
-	_lstCraft = new TextList(288, 104, 8, 62);
-	_lstItems = new TextList(288, 104, 8, 62);
+	_lstPersonnel = new TextList(288, 104, 8, 65);
+	_lstCraft = new TextList(288, 104, 8, 65);
+	_lstItems = new TextList(288, 104, 8, 65);
 
 	// Set palette
 	_game->setPalette(_game->getResourcePack()->getPalette("BACKPALS.DAT")->getColors(Palette::blockOffset(0)), Palette::backPos, 16);
@@ -176,12 +176,14 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_txtItem->setText(tr("STR_ITEM_LC"));
 
 	_txtQuantity->setColor(_color3);
-	_txtQuantity->setAlign(ALIGN_CENTER);
+	_txtQuantity->setAlign(ALIGN_RIGHT);
 	_txtQuantity->setText(tr("STR_QUANTITY"));
 
 	_txtSell->setColor(_color3);
 	_txtSell->setAlign(ALIGN_CENTER);
+	_txtSell->setVerticalAlign(ALIGN_BOTTOM);
 	_txtSell->setText(_overfull ? tr("STR_SELL") : tr("STR_SELL_SACK"));
+	_txtSell->setWordWrap(true);
 
 	_txtValue->setColor(_color3);
 	_txtValue->setText(tr("STR_VALUE"));
@@ -223,7 +225,7 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 		if (tItems->getTotalQuantity() > 0)
 		{
 			_haveTransferItems = true;
-			TextList *lstTransfers = new TextList(288, 104, 8, 62);
+			TextList *lstTransfers = new TextList(288, 104, 8, 65);
 			add(lstTransfers);
 			_lists.push_back(lstTransfers);
 			_tabs.push_back("STR_TRANSFERS_UC");
@@ -235,7 +237,7 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 			{
 				if ((*c)->getItems()->getTotalQuantity() > 0)
 				{
-					TextList *lstCraftInventory = new TextList(288, 104, 8, 62);
+					TextList *lstCraftInventory = new TextList(288, 104, 8, 65);
 					add(lstCraftInventory);
 					_lists.push_back(lstCraftInventory);
 					_tabs.push_back(Language::wstrToUtf8((*c)->getName(_game->getLanguage())));
@@ -250,7 +252,7 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 				Craft *craft = (*t)->getCraft();
 				if (craft->getItems()->getTotalQuantity() > 0)
 				{
-					TextList *lstCraftInventory = new TextList(288, 104, 8, 62);
+					TextList *lstCraftInventory = new TextList(288, 104, 8, 65);
 					add(lstCraftInventory);
 					_lists.push_back(lstCraftInventory);
 					_tabs.push_back(Language::wstrToUtf8(craft->getName(_game->getLanguage())));
@@ -269,8 +271,8 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	for (std::vector<TextList*>::iterator i = _lists.begin(); i != _lists.end(); ++i)
 	{
 		(*i)->setColor(_color);
-		(*i)->setArrowColumn(149, ARROW_VERTICAL);
-		(*i)->setColumns(5, 124, 60, 28, 52, 22);
+		(*i)->setArrowColumn(176, ARROW_VERTICAL);
+		(*i)->setColumns(5, 152, 49, 24, 42, 22);
 		(*i)->setSelectable(true);
 		(*i)->setBackground(_window);
 		(*i)->setMargin(2);
