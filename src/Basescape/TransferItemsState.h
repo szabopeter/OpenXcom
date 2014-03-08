@@ -60,7 +60,7 @@ private:
 	Timer *_timerInc, *_timerDec;
 	int _changeValueByMouseWheel;
 	size_t _itemOffset;
-	bool _canTransferCraftsWhileAirborne, _containmentLimit, _allowChangeListValuesByMouseWheel;
+	bool _canTransferCraftsWhileAirborne, _storageLimitsEnforced, _allowChangeListValuesByMouseWheel;
 	/// Gets selected cost.
 	int getCost() const;
 	/// Gets selected quantity.
