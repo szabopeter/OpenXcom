@@ -668,6 +668,7 @@ void PurchaseState::increase()
 void PurchaseState::increaseByValue(int change)
 {
 	if (0 >= change) return;
+
 	if (_total + getPrice() > _game->getSavedGame()->getFunds())
 	{
 		_timerInc->stop();
@@ -686,7 +687,7 @@ void PurchaseState::increaseByValue(int change)
 	}
 	// Or a craft item
 	else if ((_selTab == TAB_CRAFT) && (_sel >= _crafts.size())
-		&& _iQty + (int)(10 * _game->getRuleset()->getItem(_craftItems[_sel - _crafts.size()])->getSize() > (10 * _base->getAvailableStores() - (int)(10 *_base->getExactUsedStores() + 0.5))))
+		&& _iQty + (int)(10 * _game->getRuleset()->getItem(_craftItems[_sel - _crafts.size()])->getSize()) > (10 * _base->getAvailableStores() - (int)(10 *_base->getExactUsedStores() + 0.5)))
 	{
 		_timerInc->stop();
 		_game->pushState(new ErrorMessageState(_game, "STR_NOT_ENOUGH_STORE_SPACE", Palette::blockOffset(15)+1, "BACK13.SCR", 0));
@@ -772,6 +773,7 @@ void PurchaseState::decreaseByValue(int change)
  	{
 		// Personnel count
 		if (0 >= _qtysPersonnel[_sel]) return;
+
 		change = std::min(_qtysPersonnel[_sel], change);
 		_pQty -= change;
 		_qtysPersonnel[_sel] -= change;
@@ -780,6 +782,7 @@ void PurchaseState::decreaseByValue(int change)
 	{
 		// Craft count
 		if (0 >= _qtysCraft[_sel]) return;
+
 		change = std::min(_qtysCraft[_sel], change);
 		_cQty -= change;
 		_qtysCraft[_sel] -= change;
@@ -787,16 +790,18 @@ void PurchaseState::decreaseByValue(int change)
 	else
 	{
 		// Item count
-		if (0 >= _qtys[_sel]) return;
-
 		if (_selTab == TAB_CRAFT)
 		{
-			change = std::min(_qtysCraft[_sel - _crafts.size()], change);
+			if (0 >= _qtysCraft[_sel]) return;
+
+			change = std::min(_qtysCraft[_sel], change);
 			_iQty -= (int)(10 *_game->getRuleset()->getItem(_craftItems[_sel - _crafts.size()])->getSize()) * change;
 			_qtysCraft[_sel] -= change;
 		}
 		else
 		{
+			if (0 >= _qtys[_sel]) return;
+
 			change = std::min(_qtys[_sel], change);
 			_iQty -= (int)(10 *_game->getRuleset()->getItem(_items[_sel])->getSize()) * change;
 			_qtys[_sel] -= change;
