@@ -221,7 +221,7 @@ PurchaseState::PurchaseState(Game *game, Base *base) : State(game), _base(base),
 			std::wstringstream ss5;
 			ss5 << _base->getItems()->getItem(*i);
 			std::wstring item = tr(*i);
-			if (rule->getSubCategory() == "CRAFT_WEAPON")
+			if (rule->isCraftItem())
 			{
 				_craftItems.push_back(*i);
 				_qtysCraft.push_back(0);
@@ -236,7 +236,7 @@ PurchaseState::PurchaseState(Game *game, Base *base) : State(game), _base(base),
 					_lstCraft->addRow(4, item.c_str(), Text::formatFunding(rule->getBuyCost()).c_str(), ss5.str().c_str(), L"0");
 				}
 			}
-			else
+			if (rule->isBattlescapeItem())
 			{
 				_items.push_back(*i);
 				_qtys.push_back(0);
@@ -373,6 +373,11 @@ void PurchaseState::btnOkClick(Action *)
 		if (_qtys[i] > 0)
 		{
 			RuleItem *ri = _game->getRuleset()->getItem(_items[i]);
+			if (ri->isCraftItem() && ri->isBattlescapeItem())
+			{
+				// Do not buy craft items twice.
+				continue;
+			}
 			Transfer *t = new Transfer(ri->getTransferTime());
 			t->setItems(_items[i], _qtys[i]);
 			_base->getTransfers()->push_back(t);
@@ -720,12 +725,20 @@ void PurchaseState::increaseByValue(int change)
 		}
 		else
 		{
+			RuleItem *rule;
+
 			// Item count
 			int storesNeededPerItem;
 			if (_selTab == TAB_CRAFT)
-				storesNeededPerItem = (int)(10 *_game->getRuleset()->getItem(_craftItems[_sel - _crafts.size()])->getSize());
+			{
+				rule = _game->getRuleset()->getItem(_craftItems[_sel - _crafts.size()]);
+				storesNeededPerItem = (int)(10 * rule->getSize());
+			}
 			else
-				storesNeededPerItem = (int)(10 *_game->getRuleset()->getItem(_items[_sel])->getSize());
+			{
+				rule = _game->getRuleset()->getItem(_items[_sel]);
+				storesNeededPerItem = (int)(10 * rule->getSize());
+			}
 			int freeStores = 10 * _base->getAvailableStores() - (int)(10 * _base->getExactUsedStores()) - _iQty;
 			int maxByStores;
 
@@ -744,6 +757,23 @@ void PurchaseState::increaseByValue(int change)
 				_qtysCraft[_sel] += change;
 			else
 				_qtys[_sel] += change;
+
+			// cross referencing - update other tab if necessary
+			if (rule->isCraftItem() && rule->isBattlescapeItem())
+			{
+				if (_selTab == TAB_CRAFT)
+				{
+					std::vector<std::string>::const_iterator it (std::find(_items.begin(), _items.end(), rule->getName()));
+					size_t indx = it - _items.begin();
+					_qtys[indx] += change;
+				}
+				else
+				{
+					std::vector<std::string>::const_iterator it (std::find(_craftItems.begin(), _craftItems.end(), rule->getName()));
+					size_t indx = it - _craftItems.begin() + _crafts.size();
+					_qtysCraft[indx] += change;
+				}
+			}
 		}
 
 		_total += getPrice() * change;
@@ -789,22 +819,43 @@ void PurchaseState::decreaseByValue(int change)
 	}
 	else
 	{
+		RuleItem *rule;
+
 		// Item count
 		if (_selTab == TAB_CRAFT)
 		{
 			if (0 >= _qtysCraft[_sel]) return;
 
+			rule = _game->getRuleset()->getItem(_craftItems[_sel - _crafts.size()]);
 			change = std::min(_qtysCraft[_sel], change);
-			_iQty -= (int)(10 *_game->getRuleset()->getItem(_craftItems[_sel - _crafts.size()])->getSize()) * change;
+			_iQty -= (int)(10 * rule->getSize()) * change;
 			_qtysCraft[_sel] -= change;
 		}
 		else
 		{
 			if (0 >= _qtys[_sel]) return;
 
+			rule = _game->getRuleset()->getItem(_items[_sel]);
 			change = std::min(_qtys[_sel], change);
-			_iQty -= (int)(10 *_game->getRuleset()->getItem(_items[_sel])->getSize()) * change;
+			_iQty -= (int)(10 * rule->getSize()) * change;
 			_qtys[_sel] -= change;
+		}
+
+		// cross referencing - update other tab if necessary
+		if (rule->isCraftItem() && rule->isBattlescapeItem())
+		{
+			if (_selTab == TAB_CRAFT)
+			{
+				std::vector<std::string>::const_iterator it (std::find(_items.begin(), _items.end(), rule->getName()));
+				size_t indx = it - _items.begin();
+				_qtys[indx] -= change;
+			}
+			else
+			{
+				std::vector<std::string>::const_iterator it (std::find(_craftItems.begin(), _craftItems.end(), rule->getName()));
+				size_t indx = it - _craftItems.begin() + _crafts.size();
+				_qtysCraft[indx] -= change;
+			}
 		}
 	}
 
@@ -817,6 +868,7 @@ void PurchaseState::decreaseByValue(int change)
  */
 void PurchaseState::updateItemStrings()
 {
+	RuleItem *rule;
 	_txtPurchases->setText(tr("STR_COST_OF_PURCHASES").arg(Text::formatFunding(_total)));
 	std::wstringstream ss;
 	if (_selTab == TAB_PERSONNEL)
@@ -837,6 +889,11 @@ void PurchaseState::updateItemStrings()
 		ss << _qtysCraft[_sel];
 		_lstCraft->setCellText(_sel, 3, ss.str());
 
+		if (_sel >= _crafts.size())
+		{
+			rule = _game->getRuleset()->getItem(_craftItems[_sel - _crafts.size()]);
+		}
+
 		if (_qtysCraft[_sel] == 0)
 		{
 			if (_sel < _crafts.size())
@@ -845,7 +902,7 @@ void PurchaseState::updateItemStrings()
 			}
 			else
 			{
-				RuleItem *rule = _game->getRuleset()->getItem(_craftItems[_sel - _crafts.size()]);
+
 				if (rule->getClipSize() > 0)
 				{
 					_lstCraft->setRowColor(_sel, Palette::blockOffset(15) + 6);
@@ -866,8 +923,7 @@ void PurchaseState::updateItemStrings()
 		ss << _qtys[_sel];
 		_lstItems->setCellText(_sel, 3, ss.str());
 
-		RuleItem *rule = _game->getRuleset()->getItem(_items[_sel]);
-
+		rule = _game->getRuleset()->getItem(_items[_sel]);
 		if (rule->getBattleType() == BT_AMMO && _qtys[_sel] == 0)
 		{
 			_lstItems->setRowColor(_sel, Palette::blockOffset(15) + 6);
@@ -879,6 +935,41 @@ void PurchaseState::updateItemStrings()
 		else
 		{
 			_lstItems->setRowColor(_sel, Palette::blockOffset(13) + 10);
+		}
+	}
+
+	// cross referencing - update other tab if necessary
+	if (rule && rule->isCraftItem() && rule->isBattlescapeItem())
+	{
+		TextList *lst;
+		size_t indx;
+		bool purchasing;
+		if (_selTab == TAB_CRAFT)
+		{
+			lst = _lstItems;
+			std::vector<std::string>::const_iterator it (std::find(_items.begin(), _items.end(), rule->getName()));
+			indx = it - _items.begin();
+			purchasing = _qtysCraft[_sel] > 0;
+		}
+		else
+		{
+			lst = _lstCraft;
+			std::vector<std::string>::const_iterator it (std::find(_craftItems.begin(), _craftItems.end(), rule->getName()));
+			indx = it - _craftItems.begin() + _crafts.size();
+			purchasing = _qtys[_sel] > 0;
+		}
+		lst->setCellText(indx, 3, ss.str());
+		if (purchasing)
+		{
+			lst->setRowColor(indx, Palette::blockOffset(13));
+		}
+		else if (rule->getClipSize() > 0 || (rule->getBattleType() == BT_NONE && rule->getClipSize() > 0))
+		{
+			lst->setRowColor(indx, Palette::blockOffset(15) + 6);
+		}
+		else
+		{
+			lst->setRowColor(indx, Palette::blockOffset(13) + 10);
 		}
 	}
 }
