@@ -70,14 +70,14 @@ PurchaseState::PurchaseState(Game *game, Base *base) : State(game), _base(base),
 	_btnTab = new TextButton(72, 14, 35, 35);
 	_btnNext = new TextButton(25, 14, 109, 35);
 
-	_txtItem = new Text(130, 9, 30, 50);
-	_txtCost = new Text(65, 18, 139, 42);
-	_txtInStorage = new Text(45, 18, 205, 42);
-	_txtQuantity = new Text(60, 9, 255, 52);
+	_txtItem = new Text(80, 9, 30, 53);
+	_txtCost = new Text(60, 18, 141, 43);
+	_txtInStorage = new Text(45, 18, 205, 43);
+	_txtQuantity = new Text(60, 9, 255, 53);
 
-	_lstPersonnel = new TextList(288, 104, 8, 62);
-	_lstCraft = new TextList(288, 104, 8, 62);
-	_lstItems = new TextList(288, 104, 8, 62);
+	_lstPersonnel = new TextList(288, 104, 8, 65);
+	_lstCraft = new TextList(288, 104, 8, 65);
+	_lstItems = new TextList(288, 104, 8, 65);
 
 	// Set palette
 	_game->setPalette(_game->getResourcePack()->getPalette("BACKPALS.DAT")->getColors(Palette::blockOffset(0)), Palette::backPos, 16);
@@ -147,13 +147,13 @@ PurchaseState::PurchaseState(Game *game, Base *base) : State(game), _base(base),
 	_txtCost->setWordWrap(true);
 	_txtCost->setVerticalAlign(ALIGN_BOTTOM);
 
-	_txtQuantity->setColor(Palette::blockOffset(13)+5);
-	_txtQuantity->setText(tr("STR_QUANTITY"));
-
 	_txtInStorage->setColor(Palette::blockOffset(13)+5);
 	_txtInStorage->setText(tr("STR_ON_BASE"));
 	_txtInStorage->setWordWrap(true);
 	_txtInStorage->setVerticalAlign(ALIGN_BOTTOM);
+
+	_txtQuantity->setColor(Palette::blockOffset(13)+5);
+	_txtQuantity->setText(tr("STR_QUANTITY"));
 
 	_lists.push_back(_lstPersonnel);
 	_tabs.push_back("STR_PERSONNEL");

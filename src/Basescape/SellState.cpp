@@ -79,9 +79,9 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_txtSpaceUsed = new Text(150, 8, 160, 34);
 
 	_txtItem = new Text(80, 9, 30, 53);
-	_txtQuantity = new Text(54, 9, 120, 53);
-	_txtSell = new Text(54, 19, 178, 42);
-	_txtValue = new Text(40, 9, 234, 53);
+	_txtQuantity = new Text(54, 9, 112, 53);
+	_txtSell = new Text(54, 9, 168, 53);
+	_txtValue = new Text(40, 9, 231, 53);
 	_txtSpace = new Text(40, 9, 273, 53);
 
 	_lstPersonnel = new TextList(288, 104, 8, 65);
@@ -180,10 +180,8 @@ SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game)
 	_txtQuantity->setText(tr("STR_QUANTITY"));
 
 	_txtSell->setColor(_color3);
-	_txtSell->setAlign(ALIGN_CENTER);
-	_txtSell->setVerticalAlign(ALIGN_BOTTOM);
-	_txtSell->setText(_overfull ? tr("STR_SELL") : tr("STR_SELL_SACK"));
-	_txtSell->setWordWrap(true);
+	_txtSell->setAlign(ALIGN_RIGHT);
+	_txtSell->setText(tr("STR_SELL"));
 
 	_txtValue->setColor(_color3);
 	_txtValue->setText(tr("STR_VALUE"));
@@ -651,6 +649,8 @@ void SellState::switchTab(int direction)
 	_selList->onRightArrowClick((ActionHandler)&SellState::lstItemsRightArrowClick);
 	_selList->onMousePress((ActionHandler)&SellState::lstItemsMousePress);
 	_selList->setVisible(true);
+
+	_txtSell->setText(_selTab == TAB_PERSONNEL ? tr("STR_SACK_LC") : tr("STR_SELL"));
 }
 
 /**
