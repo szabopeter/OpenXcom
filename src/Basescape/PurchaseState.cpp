@@ -939,7 +939,7 @@ void PurchaseState::updateItemStrings()
 	}
 
 	// cross referencing - update other tab if necessary
-	if (rule && rule->isCraftItem() && rule->isBattlescapeItem())
+	if (_selTab != TAB_PERSONNEL && !(_selTab == TAB_CRAFT && _sel < _crafts.size()) && rule->isCraftItem() && rule->isBattlescapeItem())
 	{
 		TextList *lst;
 		size_t indx;

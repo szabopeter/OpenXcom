@@ -874,26 +874,27 @@ void SellState::increaseByValue(int change)
 	change = std::min(getQuantity() - _quantities[_selTab][_sel], change);
 	_quantities[_selTab][_sel] += change;
 
-	// cross referencing - update other tab if necessary
-	RuleItem *rule = _game->getRuleset()->getItem(_items[_selTab][getItemIndex(_sel)]);
-	if (rule->isCraftItem() && rule->isBattlescapeItem())
-	{
-		if (_selTab == TAB_CRAFT)
-		{
-			std::vector<std::string>::const_iterator it (std::find(_items[TAB_ITEMS].begin(), _items[TAB_ITEMS].end(), rule->getName()));
-			size_t indx = it - _items[TAB_ITEMS].begin();
-			_quantities[TAB_ITEMS][indx] += change;
-		}
-		else
-		{
-			std::vector<std::string>::const_iterator it (std::find(_items[TAB_CRAFT].begin(), _items[TAB_CRAFT].end(), rule->getName()));
-			size_t indx = it - _items[TAB_CRAFT].begin() + _crafts.size();
-			_quantities[TAB_CRAFT][indx] += change;
-		}
-	}
-
 	if (_selTab != TAB_PERSONNEL && !(_selTab == TAB_CRAFT && _sel < _crafts.size()))
 	{
+		RuleItem *rule = _game->getRuleset()->getItem(_items[_selTab][getItemIndex(_sel)]);
+
+		// cross referencing - update other tab if necessary
+		if (rule->isCraftItem() && rule->isBattlescapeItem())
+		{
+			if (_selTab == TAB_CRAFT)
+			{
+				std::vector<std::string>::const_iterator it (std::find(_items[TAB_ITEMS].begin(), _items[TAB_ITEMS].end(), rule->getName()));
+				size_t indx = it - _items[TAB_ITEMS].begin();
+				_quantities[TAB_ITEMS][indx] += change;
+			}
+			else
+			{
+				std::vector<std::string>::const_iterator it (std::find(_items[TAB_CRAFT].begin(), _items[TAB_CRAFT].end(), rule->getName()));
+				size_t indx = it - _items[TAB_CRAFT].begin() + _crafts.size();
+				_quantities[TAB_CRAFT][indx] += change;
+			}
+		}
+
 		// Calculate the change in storage space in tenths of an XCom storage unit.
 		_spaceChange +=  change * (int)(10 * rule->getSize());
 	}
@@ -922,25 +923,27 @@ void SellState::decreaseByValue(int change)
 	change = std::min(_quantities[_selTab][_sel], change);
 	_quantities[_selTab][_sel] -= change;
 
-	// cross referencing - update other tab if necessary
-	RuleItem *rule = _game->getRuleset()->getItem(_items[_selTab][getItemIndex(_sel)]);
-	if (rule->isCraftItem() && rule->isBattlescapeItem())
-	{
-		if (_selTab == TAB_CRAFT)
-		{
-			std::vector<std::string>::const_iterator it (std::find(_items[TAB_ITEMS].begin(), _items[TAB_ITEMS].end(), rule->getName()));
-			size_t indx = it - _items[TAB_ITEMS].begin();
-			_quantities[TAB_ITEMS][indx] -= change;
-		}
-		else
-		{
-			std::vector<std::string>::const_iterator it (std::find(_items[TAB_CRAFT].begin(), _items[TAB_CRAFT].end(), rule->getName()));
-			size_t indx = it - _items[TAB_CRAFT].begin() + _crafts.size();
-			_quantities[TAB_CRAFT][indx] -= change;
-		}
-	}
 	if (_selTab != TAB_PERSONNEL && !(_selTab == TAB_CRAFT && _sel < _crafts.size()))
 	{
+		RuleItem *rule = _game->getRuleset()->getItem(_items[_selTab][getItemIndex(_sel)]);
+
+		// cross referencing - update other tab if necessary
+		if (rule->isCraftItem() && rule->isBattlescapeItem())
+		{
+			if (_selTab == TAB_CRAFT)
+			{
+				std::vector<std::string>::const_iterator it (std::find(_items[TAB_ITEMS].begin(), _items[TAB_ITEMS].end(), rule->getName()));
+				size_t indx = it - _items[TAB_ITEMS].begin();
+				_quantities[TAB_ITEMS][indx] -= change;
+			}
+			else
+			{
+				std::vector<std::string>::const_iterator it (std::find(_items[TAB_CRAFT].begin(), _items[TAB_CRAFT].end(), rule->getName()));
+				size_t indx = it - _items[TAB_CRAFT].begin() + _crafts.size();
+				_quantities[TAB_CRAFT][indx] -= change;
+			}
+		}
+
 		// Calculate the change in storage space in tenths of an XCom storage unit.
 		_spaceChange -=  change * (int)(10 * rule->getSize());
 	}
@@ -966,7 +969,10 @@ void SellState::updateItemStrings()
 	ss5 << ":" << _base->getAvailableStores();
 	_txtSpaceUsed->setText(tr("STR_SPACE_USED").arg(ss5.str()));
 
-	RuleItem *rule = _game->getRuleset()->getItem(_items[_selTab][getItemIndex(_sel)]);
+
+	RuleItem *rule;
+	if (_selTab != TAB_PERSONNEL && !(_selTab == TAB_CRAFT && _sel < _crafts.size()))
+		rule = _game->getRuleset()->getItem(_items[_selTab][getItemIndex(_sel)]);
 
 	if (_quantities[_selTab][_sel] > 0)
 	{
@@ -989,7 +995,7 @@ void SellState::updateItemStrings()
 	}
 
 	// cross referencing - update other tab if necessary
-	if (rule->isCraftItem() && rule->isBattlescapeItem())
+	if (_selTab != TAB_PERSONNEL && !(_selTab == TAB_CRAFT && _sel < _crafts.size()) && rule->isCraftItem() && rule->isBattlescapeItem())
 	{
 		TextList *lst;
 		size_t indx;
