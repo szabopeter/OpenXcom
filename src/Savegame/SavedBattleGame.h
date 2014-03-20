@@ -81,6 +81,7 @@ private:
 	std::vector< std::vector<std::pair<int, int> > > _baseModules;
 	bool _equipByLayoutFailed;
 	Tile *_craftInventoryTile; // This is a save for equipByLayout()
+	std::string _terrain;
 	/// Selects a soldier.
 	BattleUnit *selectPlayerUnit(int dir, bool checkReselect = false, bool setReselect = false, bool checkInventory = false);
 public:
@@ -122,6 +123,8 @@ public:
 	int getMapSizeZ() const;
 	/// Gets terrain x*y*z
 	int getMapSizeXYZ() const;
+	void setTerrain(std::string terrain);
+	std::string getTerrain() const;
 
 	/**
 	 * Converts coordinates into a unique index.
