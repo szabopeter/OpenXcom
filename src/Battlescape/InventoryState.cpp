@@ -33,7 +33,9 @@
 #include "../Savegame/BattleItem.h"
 #include "../Savegame/BattleUnit.h"
 #include "../Savegame/Soldier.h"
+#include "../Savegame/EquipmentLayout.h"
 #include "../Savegame/EquipmentLayoutItem.h"
+#include "LayoutManagerState.h"
 #include "Inventory.h"
 #include "../Ruleset/Ruleset.h"
 #include "../Ruleset/RuleItem.h"
@@ -81,6 +83,7 @@ InventoryState::InventoryState(Game *game, bool tu, BattlescapeState *parent) : 
 	_btnRank = new InteractiveSurface(26, 23, 0, 0);
 	_selAmmo = new Surface(RuleInventory::HAND_W * RuleInventory::SLOT_W, RuleInventory::HAND_H * RuleInventory::SLOT_H, 272, 88);
 	_inv = new Inventory(_game, 320, 200, 0, 0);
+	if (!_tu) _btnLayMan = new InteractiveSurface(26, 22, 243, 75);
 
 	add(_bg);
 	add(_soldier);
@@ -101,6 +104,7 @@ InventoryState::InventoryState(Game *game, bool tu, BattlescapeState *parent) : 
 	add(_btnRank);
 	add(_selAmmo);
 	add(_inv);
+	if (!_tu) add(_btnLayMan);
 
 	centerAllSurfaces();
 
@@ -165,6 +169,17 @@ InventoryState::InventoryState(Game *game, bool tu, BattlescapeState *parent) : 
 	_txtReact->setVisible(_showMoreStatsInInventoryView && !_tu);
 	_txtPSkill->setVisible(_showMoreStatsInInventoryView && !_tu);
 	_txtPStr->setVisible(_showMoreStatsInInventoryView && !_tu);
+
+	if (!_tu)
+	{
+		Surface *laymanicon = _game->getResourcePack()->getSurface("LayMan");
+		laymanicon->setX(243);
+		laymanicon->setY(75);
+		laymanicon->blit(_bg);
+		_btnLayMan->onMouseClick((ActionHandler)&InventoryState::btnLayManClick);
+
+		if (_battleGame->getEquipByLayoutFailed()) _inv->showWarning(_game->getLanguage()->getString("STR_NOT_ENOUGH_EQUIPMENT_FOR_LAYOUT"));
+	}
 }
 
 /**
@@ -315,24 +330,20 @@ void InventoryState::saveEquipmentLayout()
 		// we need X-Com soldiers only
 		if (0 == (*i)->getGeoscapeSoldier()) continue;
 
-		std::vector<EquipmentLayoutItem*> *layoutItems = (*i)->getGeoscapeSoldier()->getEquipmentLayout();
+		EquipmentLayout *layout = (*i)->getGeoscapeSoldier()->getEquipmentLayout();
 
-		// clear the previous save
-		if (!layoutItems->empty())
-		{
-			for (std::vector<EquipmentLayoutItem*>::iterator j = layoutItems->begin(); j != layoutItems->end(); ++j)
-				delete *j;
-			layoutItems->clear();
-		}
+		// we want to process the soldiers whom have custom layout only
+		if (layout != 0 && layout->getId() != 0) continue;
 
 		// save the soldier's items
 		// note: with using getInventory() we are skipping the ammos loaded, (they're not owned) because we handle the loaded-ammos separately (inside)
+		layout = new EquipmentLayout(L"", 0);
 		for (std::vector<BattleItem*>::iterator j = (*i)->getInventory()->begin(); j != (*i)->getInventory()->end(); ++j)
 		{
 			std::string ammo;
 			if ((*j)->needsAmmo() && 0 != (*j)->getAmmoItem()) ammo = (*j)->getAmmoItem()->getRules()->getType();
 			else ammo = "NONE";
-			layoutItems->push_back(new EquipmentLayoutItem(
+			layout->getItems()->push_back(new EquipmentLayoutItem(
 				(*j)->getRules()->getType(),
 				(*j)->getSlot()->getId(),
 				(*j)->getSlotX(),
@@ -341,6 +352,7 @@ void InventoryState::saveEquipmentLayout()
 				(*j)->getExplodeTurn()
 			));
 		}
+		(*i)->getGeoscapeSoldier()->setEquipmentLayout(layout);
 	}
 
 }
@@ -499,6 +511,16 @@ void InventoryState::invClick(Action *)
 		_txtAmmo->setText(s);
 	}
 	updateStats();
+}
+
+/**
+ * Brings up the Layout Manager screen.
+ * @param action Pointer to an action.
+ */
+void InventoryState::btnLayManClick(Action *)
+{
+	if (_inv->getSelectedItem() != 0) return;
+	_game->pushState(new LayoutManagerState(_game, (_parent != 0)));
 }
 
 /**

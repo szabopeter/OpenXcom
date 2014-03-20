@@ -46,6 +46,7 @@ class AlienStrategy;
 class AlienMission;
 class Target;
 class Soldier;
+class EquipmentLayout;
 
 /**
  * Enumerator containing all the possible game difficulties.
@@ -78,9 +79,11 @@ private:
 	std::vector<int> _funds, _maintenance, _researchScores, _incomes, _expenditures;
 	double _globeLon, _globeLat;
 	int _globeZoom;
+	EquipmentLayout *_newSoldierLayout;
 	std::map<std::string, int> _ids;
 	std::vector<Country*> _countries;
 	std::vector<Region*> _regions;
+	std::vector<EquipmentLayout*> _layouts;
 	std::vector<Base*> _bases;
 	std::vector<Ufo*> _ufos;
 	std::vector<Waypoint*> _waypoints;
@@ -137,6 +140,10 @@ public:
 	int getGlobeZoom() const;
 	/// Sets the new globe zoom.
 	void setGlobeZoom(int zoom);
+	/// Gets the layout which is automatically assigned to a new soldier.
+	EquipmentLayout *getNewSoldierLayout() const;
+	/// Sets the layout which is automatically assigned to a new soldier.
+	void setNewSoldierLayout(EquipmentLayout *layout);
 	/// Handles monthly funding.
 	void monthlyFunding();
 	/// Gets the current game time.
@@ -151,6 +158,12 @@ public:
 	int getCountryFunding() const;
 	/// Gets the list of regions.
 	std::vector<Region*> *getRegions();
+	/// Gets the list of layouts.
+	std::vector<EquipmentLayout*> *getLayouts();
+	/// Gets the list of layouts.
+	const std::vector<EquipmentLayout*> *getLayouts() const;
+	/// Gets the layout matching this ID.
+	EquipmentLayout *getLayout(int id) const;
 	/// Gets the list of bases.
 	std::vector<Base*> *getBases();
 	/// Gets the list of bases.
