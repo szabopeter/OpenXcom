@@ -42,6 +42,7 @@ class ManageAlienContainmentState : public State
 {
 private:
 	Base *_base;
+	OptionsOrigin _origin;
 	TextButton *_btnOk, *_btnCancel;
 	Window *_window;
 	Text *_txtTitle, *_txtUsed, *_txtAvailable, *_txtItem, *_txtLiveAliens, *_txtDeadAliens;
@@ -51,7 +52,7 @@ private:
 	std::vector<std::string> _aliens;
 	unsigned int _sel;
 	int _aliensSold, _researchedAliens, _changeValueByMouseWheel;
-	bool _allowChangeListValuesByMouseWheel, _containmentLimit, _overCrowded;
+	bool _allowChangeListValuesByMouseWheel, _limitsEnforced, _overCrowded;
 	Uint8 _color, _color2;
 	/// Gets selected quantity.
 	int getQuantity();

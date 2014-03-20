@@ -48,7 +48,7 @@ namespace OpenXcom
  */
 BaseInfoState::BaseInfoState(Game *game, Base *base, BasescapeState *state) : State(game), _base(base), _state(state)
 {
-	_containmentLimit = Options::getBool("alienContainmentLimitEnforced");
+	_containmentLimit = Options::getBool("storageLimitsEnforced");
 	// Create objects
 	_bg = new Surface(320, 200, 0, 0);
 	_mini = new MiniBaseView(128, 16, 182, 8);

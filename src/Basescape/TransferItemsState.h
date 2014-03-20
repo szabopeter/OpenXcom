@@ -54,13 +54,13 @@ private:
 	std::vector<std::string> _items;
 	unsigned int _sel;
 	int _total, _pQty, _cQty, _aQty;
-	float _iQty;
+	int _iQty;
     int _hasSci, _hasEng;
 	double _distance;
 	Timer *_timerInc, *_timerDec;
 	int _changeValueByMouseWheel;
 	size_t _itemOffset;
-	bool _canTransferCraftsWhileAirborne, _containmentLimit, _allowChangeListValuesByMouseWheel;
+	bool _canTransferCraftsWhileAirborne, _storageLimitsEnforced, _allowChangeListValuesByMouseWheel;
 	/// Gets selected cost.
 	int getCost() const;
 	/// Gets selected quantity.

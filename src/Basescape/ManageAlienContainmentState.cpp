@@ -40,6 +40,7 @@
 #include "../Engine/Timer.h"
 #include "../Engine/Options.h"
 #include "../Menu/ErrorMessageState.h"
+#include "SellState.h"
 
 namespace OpenXcom
 {
@@ -50,12 +51,12 @@ namespace OpenXcom
  * @param base Pointer to the base to get info from.
  * @param origin Game section that originated this state.
  */
-ManageAlienContainmentState::ManageAlienContainmentState(Game *game, Base *base, OptionsOrigin origin) : State(game), _base(base), _qtys(), _aliens(), _sel(0), _aliensSold(0), _researchedAliens(0)
+ManageAlienContainmentState::ManageAlienContainmentState(Game *game, Base *base, OptionsOrigin origin) : State(game), _base(base), _origin(origin), _qtys(), _aliens(), _sel(0), _aliensSold(0), _researchedAliens(0)
 {
 	_changeValueByMouseWheel = Options::getInt("changeValueByMouseWheel");
 	_allowChangeListValuesByMouseWheel = (Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel);
-	_containmentLimit = Options::getBool("alienContainmentLimitEnforced");
-	_overCrowded = _containmentLimit && _base->getAvailableContainment() < _base->getUsedContainment();
+	_limitsEnforced = Options::getBool("storageLimitsEnforced");
+	_overCrowded = _limitsEnforced && _base->getAvailableContainment() < _base->getUsedContainment();
 
 	for(std::vector<ResearchProject*>::const_iterator iter = _base->getResearch().begin (); iter != _base->getResearch().end (); ++iter)
 	{
@@ -231,6 +232,15 @@ void ManageAlienContainmentState::btnOkClick(Action *)
 		}
 	}
 	_game->popState();
+
+	if (_limitsEnforced && _base->storesOverfull())
+	{
+		_game->pushState(new SellState(_game, _base, _origin));
+		if (_origin == OPT_BATTLESCAPE)
+			_game->pushState(new ErrorMessageState(_game, tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), Palette::blockOffset(8)+5, "BACK01.SCR", 0));
+		else
+			_game->pushState(new ErrorMessageState(_game, tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), Palette::blockOffset(15)+1, "BACK13.SCR", 6));
+ 	}
 }
 
 /**
@@ -422,7 +432,7 @@ void ManageAlienContainmentState::updateStrings()
 
 	int aliens = _base->getUsedContainment() - _aliensSold - _researchedAliens;
 	int spaces = _base->getAvailableContainment() - _base->getUsedContainment() + _aliensSold;
-	bool enoughSpace = _containmentLimit? spaces >= 0 : true;
+	bool enoughSpace = _limitsEnforced? spaces >= 0 : true;
 
 	_btnCancel->setVisible(enoughSpace && !_overCrowded);
 	_btnOk->setVisible(enoughSpace);
