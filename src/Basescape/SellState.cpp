@@ -45,6 +45,7 @@
 #include "../Ruleset/RuleCraftWeapon.h"
 #include "../Engine/Timer.h"
 #include "../Engine/Options.h"
+#include "../Menu/ErrorMessageState.h"
 #include "PurchaseState.h"
 
 namespace OpenXcom
@@ -55,7 +56,7 @@ namespace OpenXcom
  * @param game Pointer to the core game.
  * @param base Pointer to the base to get info from.
  */
-SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game), _base(base), _soldiers(), _crafts(), _sel(0), _total(0), _spaceChange(0), _haveTransferItems(false)
+SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game), _base(base), _origin(origin), _soldiers(), _crafts(), _sel(0), _total(0), _spaceChange(0), _haveTransferItems(false)
 {
 	_changeValueByMouseWheel = Options::getInt("changeValueByMouseWheel");
 	_allowChangeListValuesByMouseWheel = Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel;
@@ -582,6 +583,15 @@ void SellState::btnOkClick(Action *)
 	}
 
 	_game->popState();
+
+	if (Options::getBool("storageLimitsEnforced") && _base->storesOverfull())
+	{
+		_game->pushState(new SellState(_game, _base, _origin));
+		if (_origin == OPT_BATTLESCAPE)
+			_game->pushState(new ErrorMessageState(_game, tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), Palette::blockOffset(8)+5, "BACK01.SCR", 0));
+		else
+			_game->pushState(new ErrorMessageState(_game, tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), Palette::blockOffset(15)+1, "BACK13.SCR", 6));
+ 	}
 }
 
 /**

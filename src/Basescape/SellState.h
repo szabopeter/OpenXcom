@@ -47,6 +47,7 @@ class SellState : public State
 {
 private:
 	Base *_base;
+	OptionsOrigin _origin;
 	TextButton *_btnOk, *_btnCancel, *_btnTab, *_btnPrev, *_btnNext;
 	Window *_window;
 	Text *_txtTitle, *_txtSales, *_txtFunds, *_txtItem, *_txtQuantity, *_txtSell, *_txtValue, *_txtSpace, *_txtSpaceUsed;
