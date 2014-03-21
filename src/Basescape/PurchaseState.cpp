@@ -156,11 +156,11 @@ PurchaseState::PurchaseState(Game *game, Base *base) : State(game), _base(base),
 	_txtQuantity->setText(tr("STR_QUANTITY"));
 
 	_lists.push_back(_lstPersonnel);
-	_tabs.push_back("STR_PERSONNEL");
+	_tabs.push_back(tr("STR_PERSONNEL"));
 	_lists.push_back(_lstCraft);
-	_tabs.push_back("STR_CRAFT");
+	_tabs.push_back(tr("STR_CRAFT"));
 	_lists.push_back(_lstItems);
-	_tabs.push_back("STR_ITEMS");
+	_tabs.push_back(tr("STR_ITEMS"));
 	for (std::vector<TextList*>::iterator i = _lists.begin(); i != _lists.end(); ++i)
 	{
 		(*i)->setColor(Palette::blockOffset(13)+10);
@@ -176,7 +176,7 @@ PurchaseState::PurchaseState(Game *game, Base *base) : State(game), _base(base),
 	_selTab = TAB_ITEMS;
 	_selList = _lstItems;
 	_selList->setAllowScrollOnArrowButtons(!_allowChangeListValuesByMouseWheel);
-	switchTab(0);
+	updateTab();
 
 	_qtysPersonnel.push_back(0);
 	std::wstringstream ss;
@@ -373,7 +373,7 @@ void PurchaseState::btnOkClick(Action *)
 		if (_qtys[i] > 0)
 		{
 			RuleItem *ri = _game->getRuleset()->getItem(_items[i]);
-			if (ri->isCraftItem() && ri->isBattlescapeItem())
+			if (ri->isCraftItem())
 			{
 				// Do not buy craft items twice.
 				continue;
@@ -402,7 +402,7 @@ void PurchaseState::btnCancelClick(Action *)
  * @param list List the index belongs to.
  * @param change Amount to change the index.
  */
-void PurchaseState::updateIndex(size_t &index, std::vector<std::string> &list, int change)
+void PurchaseState::updateIndex(size_t &index, std::vector<std::wstring> &list, int change)
 {
 	int i = index;
 	if (i + change >= (int)list.size())
@@ -420,10 +420,10 @@ void PurchaseState::updateIndex(size_t &index, std::vector<std::string> &list, i
 }
 
 /**
- * Switches the currently displayed tab.
+ * Updates the displayed tab.  First switches tabs if requested.
  * @param direction Direction to move through tabs, 1 (forward), -1 (back), or 0 (setup current tab).
  */
-void PurchaseState::switchTab(int direction)
+void PurchaseState::updateTab(int direction)
 {
 	_selList->onLeftArrowPress(0);
 	_selList->onLeftArrowRelease(0);
@@ -436,7 +436,7 @@ void PurchaseState::switchTab(int direction)
 
 	updateIndex(_selTab, _tabs, direction);
 
-	_btnTab->setText(tr(_tabs[_selTab]));
+	_btnTab->setText(_tabs[_selTab]);
 
 	_selList = _lists[_selTab];
 	_selList->onLeftArrowPress((ActionHandler)&PurchaseState::lstItemsLeftArrowPress);
@@ -457,11 +457,11 @@ void PurchaseState::btnTabClick(Action *action)
 {
 	if (action->getDetails()->button.button == SDL_BUTTON_LEFT)
 	{
-		switchTab(1);
+		updateTab(1);
 	}
 	else if (action->getDetails()->button.button == SDL_BUTTON_RIGHT)
 	{
-		switchTab(-1);
+		updateTab(-1);
 	}
 }
 
@@ -471,7 +471,7 @@ void PurchaseState::btnTabClick(Action *action)
  */
 void PurchaseState::btnPrevClick(Action *)
 {
-	switchTab(-1);
+	updateTab(-1);
 }
 
 /**
@@ -480,7 +480,7 @@ void PurchaseState::btnPrevClick(Action *)
  */
 void PurchaseState::btnNextClick(Action *)
 {
-	switchTab(1);
+	updateTab(1);
 }
 
 /**
@@ -939,7 +939,8 @@ void PurchaseState::updateItemStrings()
 	}
 
 	// cross referencing - update other tab if necessary
-	if (_selTab != TAB_PERSONNEL && !(_selTab == TAB_CRAFT && _sel < _crafts.size()) && rule->isCraftItem() && rule->isBattlescapeItem())
+	if ((_selTab == TAB_ITEMS && rule->isCraftItem()) ||
+		(_selTab == TAB_CRAFT && _sel >= _crafts.size() && rule->isBattlescapeItem()))
 	{
 		TextList *lst;
 		size_t indx;

@@ -48,7 +48,7 @@ private:
 	Text *_txtTitle, *_txtFunds, *_txtPurchases, *_txtItem, *_txtCost, *_txtQuantity, *_txtInStorage;;
 	TextList *_lstPersonnel, *_lstCraft, *_lstItems, *_selList;
 	std::vector<std::string> _crafts, _items, _craftItems;
-	std::vector<std::string> _tabs;
+	std::vector<std::wstring> _tabs;
 	std::vector<TextList*> _lists;
 	std::vector<int> _qtys, _qtysPersonnel, _qtysCraft;
 	unsigned int _sel;
@@ -62,9 +62,9 @@ private:
 	/// Is it excluded in the options file?
 	bool isExcluded(std::string item);
 	/// Updates the tab index.
-	void updateIndex(size_t &index, std::vector<std::string> &list, int change);
-	/// Switches the currently displayed tab.
-	void switchTab(int change);
+	void updateIndex(size_t &index, std::vector<std::wstring> &list, int change);
+	/// Updates the displayed tab.
+	void updateTab(int direction = 0);
 public:
 	/// Creates the Purchase state.
 	PurchaseState(Game *game, Base *base);
