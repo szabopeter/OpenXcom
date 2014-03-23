@@ -65,6 +65,16 @@ private:
 	void updateIndex(size_t &index, std::vector<std::wstring> &list, int change);
 	/// Updates the displayed tab.
 	void updateTab(int direction = 0);
+	/// Increases the quantity of an item by one.
+	void increase();
+	/// Increases the quantity of an item by the given value.
+	void increaseByValue(int change);
+	/// Decreases the quantity of an item by one.
+	void decrease();
+	/// Decreases the quantity of an item by the given value.
+	void decreaseByValue(int change);
+	/// Updates the quantity-strings of the selected item.
+	void updateItemStrings();
 public:
 	/// Creates the Purchase state.
 	PurchaseState(Game *game, Base *base);
@@ -96,16 +106,6 @@ public:
 	void lstItemsRightArrowClick(Action *action);
 	/// Handler for pressing-down a mouse-button in the list.
 	void lstItemsMousePress(Action *action);
-	/// Increases the quantity of an item by one.
-	void increase();
-	/// Increases the quantity of an item by the given value.
-	void increaseByValue(int change);
-	/// Decreases the quantity of an item by one.
-	void decrease();
-	/// Decreases the quantity of an item by the given value.
-	void decreaseByValue(int change);
-	/// Updates the quantity-strings of the selected item.
-	void updateItemStrings();
 };
 
 }

@@ -45,7 +45,6 @@
 #include "../Ruleset/RuleCraftWeapon.h"
 #include "../Engine/Timer.h"
 #include "../Engine/Options.h"
-#include "../Menu/ErrorMessageState.h"
 #include "PurchaseState.h"
 
 namespace OpenXcom
@@ -56,7 +55,7 @@ namespace OpenXcom
  * @param game Pointer to the core game.
  * @param base Pointer to the base to get info from.
  */
-SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game), _base(base), _origin(origin), _soldiers(), _crafts(), _sel(0), _total(0), _spaceChange(0), _haveTransferItems(false)
+SellState::SellState(Game *game, Base *base, OptionsOrigin origin) : State(game), _base(base), _soldiers(), _crafts(), _sel(0), _total(0), _spaceChange(0), _haveTransferItems(false)
 {
 	_changeValueByMouseWheel = Options::getInt("changeValueByMouseWheel");
 	_allowChangeListValuesByMouseWheel = Options::getBool("allowChangeListValuesByMouseWheel") && _changeValueByMouseWheel;
@@ -583,15 +582,6 @@ void SellState::btnOkClick(Action *)
 	}
 
 	_game->popState();
-
-	if (Options::getBool("storageLimitsEnforced") && _base->storesOverfull())
-	{
-		_game->pushState(new SellState(_game, _base, _origin));
-		if (_origin == OPT_BATTLESCAPE)
-			_game->pushState(new ErrorMessageState(_game, tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), Palette::blockOffset(8)+5, "BACK01.SCR", 0));
-		else
-			_game->pushState(new ErrorMessageState(_game, tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), Palette::blockOffset(15)+1, "BACK13.SCR", 6));
- 	}
 }
 
 /**
@@ -726,10 +716,10 @@ void SellState::lstItemsLeftArrowRelease(Action *action)
  */
 void SellState::lstItemsLeftArrowClick(Action *action)
 {
-	if (action->getDetails()->button.button == SDL_BUTTON_RIGHT) increaseByValue(INT_MAX);
+	if (action->getDetails()->button.button == SDL_BUTTON_RIGHT) changeByValue(INT_MAX, 1);
 	if (action->getDetails()->button.button == SDL_BUTTON_LEFT)
 	{
-		increaseByValue(1);
+		changeByValue(1,1);
 		_timerInc->setInterval(250);
 		_timerDec->setInterval(250);
 	}
@@ -764,10 +754,10 @@ void SellState::lstItemsRightArrowRelease(Action *action)
  */
 void SellState::lstItemsRightArrowClick(Action *action)
 {
-	if (action->getDetails()->button.button == SDL_BUTTON_RIGHT) decreaseByValue(INT_MAX);
+	if (action->getDetails()->button.button == SDL_BUTTON_RIGHT) changeByValue(INT_MAX, -1);
 	if (action->getDetails()->button.button == SDL_BUTTON_LEFT)
 	{
-		decreaseByValue(1);
+		changeByValue(1,-1);
 		_timerInc->setInterval(250);
 		_timerDec->setInterval(250);
 	}
@@ -787,7 +777,7 @@ void SellState::lstItemsMousePress(Action *action)
 			&& action->getAbsoluteXMouse() >= _lstItems->getArrowsLeftEdge()
 			&& action->getAbsoluteXMouse() <= _lstItems->getArrowsRightEdge())
 		{
-			increaseByValue(_changeValueByMouseWheel);
+			changeByValue(_changeValueByMouseWheel, 1);
 		}
 	}
 	else if (action->getDetails()->button.button == SDL_BUTTON_WHEELDOWN)
@@ -798,7 +788,7 @@ void SellState::lstItemsMousePress(Action *action)
 			&& action->getAbsoluteXMouse() >= _lstItems->getArrowsLeftEdge()
 			&& action->getAbsoluteXMouse() <= _lstItems->getArrowsRightEdge())
 		{
-			decreaseByValue(_changeValueByMouseWheel);
+			changeByValue(_changeValueByMouseWheel, -1);
 		}
 	}
 }
@@ -870,43 +860,7 @@ void SellState::increase()
 {
 	_timerDec->setInterval(50);
 	_timerInc->setInterval(50);
-	increaseByValue(1);
-}
-
-/**
- * Increases the quantity of the selected item to sell by "change".
- * @param change How much we want to add.
- */
-void SellState::increaseByValue(int change)
-{
-	if (0 >= change || _quantities[_selTab][_sel] >= getQuantity()) return;
-
-	change = std::min(getQuantity() - _quantities[_selTab][_sel], change);
-	_quantities[_selTab][_sel] += change;
-
-	if (_selTab != TAB_PERSONNEL && !(_selTab == TAB_CRAFT && _sel < _crafts.size()))
-	{
-		RuleItem *rule = _game->getRuleset()->getItem(_items[_selTab][getItemIndex(_sel)]);
-
-		// cross referencing - update other tab if necessary
-		if (_selTab == TAB_CRAFT && rule->isBattlescapeItem())
-		{
-			std::vector<std::string>::const_iterator it (std::find(_items[TAB_ITEMS].begin(), _items[TAB_ITEMS].end(), rule->getName()));
-			size_t indx = it - _items[TAB_ITEMS].begin();
-			_quantities[TAB_ITEMS][indx] += change;
-		}
-		else if (_selTab == TAB_ITEMS && rule->isCraftItem())
-		{
-			std::vector<std::string>::const_iterator it (std::find(_items[TAB_CRAFT].begin(), _items[TAB_CRAFT].end(), rule->getName()));
-			size_t indx = it - _items[TAB_CRAFT].begin() + _crafts.size();
-			_quantities[TAB_CRAFT][indx] += change;
-		}
-
-		// Calculate the change in storage space in tenths of an XCom storage unit.
-		_spaceChange +=  change * (int)(10 * rule->getSize());
-	}
-	_total += getPrice() * change;
-	updateItemStrings();
+	changeByValue(1,1);
 }
 
 /**
@@ -916,21 +870,50 @@ void SellState::decrease()
 {
 	_timerInc->setInterval(50);
 	_timerDec->setInterval(50);
-	decreaseByValue(1);
+	changeByValue(1,-1);
 }
 
 /**
- * Decreases the quantity of the selected item to sell by "change".
- * @param change How much we want to remove.
+ * Increases or decreases the quantity of the selected item to sell.
+ * @param change How much we want to add or remove.
+ * @param dir Direction to change, +1 to increase or -1 to decrease.
  */
-void SellState::decreaseByValue(int change)
+void SellState::changeByValue(int change, int dir)
 {
-	if (0 >= change || 0 >= _quantities[_selTab][_sel]) return;
+	if (dir > 0)
+	{
+		if (0 >= change || _quantities[_selTab][_sel] >= getQuantity()) return;
+		change = std::min(getQuantity() - _quantities[_selTab][_sel], change);
+	}
+	else
+	{
+		if (0 >= change || 0 >= _quantities[_selTab][_sel]) return;
+		change = std::min(_quantities[_selTab][_sel], change);
+	}
 
-	change = std::min(_quantities[_selTab][_sel], change);
-	_quantities[_selTab][_sel] -= change;
+	_quantities[_selTab][_sel] += dir * change;
 
-	if (_selTab != TAB_PERSONNEL && !(_selTab == TAB_CRAFT && _sel < _crafts.size()))
+	// Calculate the change in storage space in tenths of an XCom storage unit.
+	if (_selTab == TAB_CRAFT && _sel < _crafts.size())
+	{
+		double total;
+		for (std::vector<CraftWeapon*>::iterator w = _crafts[_sel]->getWeapons()->begin(); w != _crafts[_sel]->getWeapons()->end(); ++w)
+		{
+			RuleItem *weapon = _game->getRuleset()->getItem((*w)->getRules()->getLauncherItem());
+			total += weapon->getSize();
+
+			RuleItem *ammo = _game->getRuleset()->getItem((*w)->getRules()->getClipItem());
+			if (ammo)
+				total += ammo->getSize() * (*w)->getClipsLoaded(_game->getRuleset());
+		}
+		_spaceChange += dir * (int)(10 * total);
+	}
+	else if (_selTab == TAB_PERSONNEL && _sel < _soldiers.size() && _soldiers[_sel]->getArmor()->getStoreItem() != "STR_NONE")
+	{
+		RuleItem *rule = _game->getRuleset()->getItem(_soldiers[_sel]->getArmor()->getStoreItem());
+		_spaceChange += dir * (int)(10 * rule->getSize());
+	}
+	else if (_selTab != TAB_PERSONNEL)
 	{
 		RuleItem *rule = _game->getRuleset()->getItem(_items[_selTab][getItemIndex(_sel)]);
 
@@ -939,19 +922,18 @@ void SellState::decreaseByValue(int change)
 		{
 			std::vector<std::string>::const_iterator it (std::find(_items[TAB_ITEMS].begin(), _items[TAB_ITEMS].end(), rule->getName()));
 			size_t indx = it - _items[TAB_ITEMS].begin();
-			_quantities[TAB_ITEMS][indx] -= change;
+			_quantities[TAB_ITEMS][indx] += dir * change;
 		}
 		else if (_selTab == TAB_ITEMS && rule->isCraftItem())
 		{
 			std::vector<std::string>::const_iterator it (std::find(_items[TAB_CRAFT].begin(), _items[TAB_CRAFT].end(), rule->getName()));
 			size_t indx = it - _items[TAB_CRAFT].begin() + _crafts.size();
-			_quantities[TAB_CRAFT][indx] -= change;
+			_quantities[TAB_CRAFT][indx] += dir * change;
 		}
-
-		// Calculate the change in storage space in tenths of an XCom storage unit.
-		_spaceChange -=  change * (int)(10 * rule->getSize());
+		_spaceChange -= dir * change * (int)(10 * rule->getSize());
 	}
-	_total -= getPrice() * change;
+
+	_total += dir * getPrice() * change;
 	updateItemStrings();
 }
 
@@ -967,12 +949,17 @@ void SellState::updateItemStrings()
 	_selList->setCellText(_sel, 2, ss.str());
 	ss2 << getQuantity() - _quantities[_selTab][_sel];
 	_selList->setCellText(_sel, 1, ss2.str());
+
 	ss5 << _base->getExactUsedStores();
 	if (_spaceChange != 0)
-		ss5 << "(-" << std::fixed << std::setprecision(1) << ((float)_spaceChange/10) << ")";
+	{
+		ss5 << "(";
+		if (_spaceChange > 0)
+			ss5 << "+";
+		ss5 << std::fixed << std::setprecision(1) << ((float)_spaceChange/10) << ")";
+	}
 	ss5 << ":" << _base->getAvailableStores();
 	_txtSpaceUsed->setText(tr("STR_SPACE_USED").arg(ss5.str()));
-
 
 	RuleItem *rule;
 	if (_selTab != TAB_PERSONNEL && !(_selTab == TAB_CRAFT && _sel < _crafts.size()))
@@ -1032,9 +1019,9 @@ void SellState::updateItemStrings()
 		}
 	}
 
-	if (_overfull)
+	if (Options::getBool("storageLimitsEnforced"))
 	{
-		_btnOk->setVisible(!_base->storesOverfull(-_spaceChange));
+		_btnOk->setVisible(!_base->storesOverfull(_spaceChange));
 	}
 }
 

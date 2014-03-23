@@ -739,9 +739,9 @@ void PurchaseState::increaseByValue(int change)
 				rule = _game->getRuleset()->getItem(_items[_sel]);
 				storesNeededPerItem = (int)(10 * rule->getSize());
 			}
-			int freeStores = 10 * _base->getAvailableStores() - (int)(10 * _base->getExactUsedStores()) - _iQty;
-			int maxByStores;
+			int freeStores = 10 * _base->getAvailableStores() - (int)(10 * _base->getExactUsedStores() + 0.5) - _iQty;
 
+			int maxByStores;
 			if (storesNeededPerItem == 0)
 			{
 				maxByStores = INT_MAX;
