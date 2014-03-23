@@ -232,7 +232,7 @@ void SoldierDiaryMissionsState::btnNextClick(Action *)
 void SoldierDiaryMissionsState::btnKillsClick(Action *)
 {
 	bool it = true;
-	_game->pushState(new SoldierDiaryKillsState(_game, _base, _soldier, this, it));
+	_game->pushState(new SoldierDiaryKillsState(_game, _base, _soldier, _soldierDiaryState, it));
 }
 
 

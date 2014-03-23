@@ -31,6 +31,7 @@
 #include "../Ruleset/Armor.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Soldier.h"
+#include "../Savegame/SoldierMedals.h"
 #include "../Savegame/Base.h"
 #include "../Savegame/ItemContainer.h"
 
@@ -80,7 +81,7 @@ MedalsInfoState::MedalsInfoState(Base *base, Game *game, int rowEntry, size_t so
 
 	_txtMedalName->setColor(Palette::blockOffset(13)+5);
 	_txtMedalName->setAlign(ALIGN_CENTER);
-	_txtMedalName->setText(tr(Soldier::getMedalNameString(_medalListEntry[rowEntry]))); // fetch the name of the medal
+	_txtMedalName->setText(tr(SoldierMedals::getMedalNameString(_medalListEntry[rowEntry]))); // fetch the name of the medal
 
 	_txtMedalLevel->setColor(Palette::blockOffset(13)+5);
 	_txtMedalLevel->setAlign(ALIGN_CENTER);
@@ -93,7 +94,7 @@ MedalsInfoState::MedalsInfoState(Base *base, Game *game, int rowEntry, size_t so
 
 	_txtMedalInfo->setColor(Palette::blockOffset(13));
 	_txtMedalInfo->setWordWrap(true);
-	_txtMedalInfo->setText(tr(Soldier::getMedalDescriptionString(_medalListEntry[rowEntry]))); // fetch the medal description
+	_txtMedalInfo->setText(tr(SoldierMedals::getMedalDescriptionString(_medalListEntry[rowEntry]))); // fetch the medal description
 
 }
 
