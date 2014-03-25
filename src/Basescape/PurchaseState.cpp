@@ -748,7 +748,7 @@ void PurchaseState::increaseByValue(int change)
 			}
 			else
 			{
-				maxByStores = floor(freeStores / storesNeededPerItem);
+				maxByStores = freeStores / storesNeededPerItem;
 			}
 			change = std::min(maxByStores, change);
 			_iQty += change * storesNeededPerItem;

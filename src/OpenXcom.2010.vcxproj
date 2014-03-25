@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -222,6 +222,7 @@
     <ClCompile Include="Basescape\DismantleFacilityState.cpp" />
     <ClCompile Include="Basescape\ManageAlienContainmentState.cpp" />
     <ClCompile Include="Basescape\ManufactureState.cpp" />
+    <ClCompile Include="Basescape\MedalsInfoState.cpp" />
     <ClCompile Include="Basescape\NewManufactureListState.cpp" />
     <ClCompile Include="Basescape\ManufactureInfoState.cpp" />
     <ClCompile Include="Basescape\MiniBaseView.cpp" />
@@ -239,6 +240,7 @@
     <ClCompile Include="Basescape\SellState.cpp" />
     <ClCompile Include="Basescape\SoldierArmorState.cpp" />
     <ClCompile Include="Basescape\SoldierDiaryInfoState.cpp" />
+    <ClCompile Include="Basescape\SoldierDiaryMissionsState.cpp" />
     <ClCompile Include="Basescape\SoldierDiaryState.cpp" />
     <ClCompile Include="Basescape\SoldierDiaryKillsState.cpp" />
     <ClCompile Include="Basescape\SoldierInfoState.cpp" />
@@ -425,6 +427,7 @@
     <ClCompile Include="Ruleset\AlienDeployment.cpp" />
     <ClCompile Include="Ruleset\AlienRace.cpp" />
     <ClCompile Include="Ruleset\RuleCommendations.cpp" />
+    <ClCompile Include="Ruleset\RuleMusic.cpp" />
     <ClCompile Include="Ruleset\Unit.cpp" />
     <ClCompile Include="Ruleset\Armor.cpp" />
     <ClCompile Include="Ruleset\RuleBaseFacility.cpp" />
@@ -468,6 +471,7 @@
     <ClCompile Include="Savegame\Node.cpp" />
     <ClCompile Include="Savegame\SoldierDeath.cpp" />
     <ClCompile Include="Savegame\SoldierDiary.cpp" />
+    <ClCompile Include="Savegame\SoldierMedals.cpp" />
     <ClCompile Include="Savegame\Target.cpp" />
     <ClCompile Include="Savegame\TerrorSite.cpp" />
     <ClCompile Include="Savegame\Tile.cpp" />
@@ -503,6 +507,7 @@
     <ClInclude Include="Basescape\CraftsState.h" />
     <ClInclude Include="Basescape\CraftWeaponsState.h" />
     <ClInclude Include="Basescape\DismantleFacilityState.h" />
+    <ClInclude Include="Basescape\MedalsInfoState.h" />
     <ClInclude Include="Basescape\NewManufactureListState.h" />
     <ClInclude Include="Basescape\ManageAlienContainmentState.h" />
     <ClInclude Include="Basescape\ManufactureInfoState.h" />
@@ -522,6 +527,7 @@
     <ClInclude Include="Basescape\SellState.h" />
     <ClInclude Include="Basescape\SoldierArmorState.h" />
     <ClInclude Include="Basescape\SoldierDiaryInfoState.h" />
+    <ClInclude Include="Basescape\SoldierDiaryMissionsState.h" />
     <ClInclude Include="Basescape\SoldierDiaryState.h" />
     <ClInclude Include="Basescape\SoldierDiaryKillsState.h" />
     <ClInclude Include="Basescape\SoldierInfoState.h" />
@@ -707,6 +713,7 @@
     <ClInclude Include="Ruleset\AlienRace.h" />
     <ClInclude Include="Ruleset\MCDPatch.h" />
     <ClInclude Include="Ruleset\RuleCommendations.h" />
+    <ClInclude Include="Ruleset\RuleMusic.h" />
     <ClInclude Include="Ruleset\Unit.h" />
     <ClInclude Include="Ruleset\Armor.h" />
     <ClInclude Include="Ruleset\RuleAlienMission.h" />
@@ -751,6 +758,7 @@
     <ClInclude Include="Savegame\Node.h" />
     <ClInclude Include="Savegame\SoldierDeath.h" />
     <ClInclude Include="Savegame\SoldierDiary.h" />
+    <ClInclude Include="Savegame\SoldierMedals.h" />
     <ClInclude Include="Savegame\Target.h" />
     <ClInclude Include="Savegame\TerrorSite.h" />
     <ClInclude Include="Savegame\Tile.h" />

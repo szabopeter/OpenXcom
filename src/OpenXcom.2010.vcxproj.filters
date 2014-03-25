@@ -814,6 +814,10 @@
     <ClCompile Include="Basescape\SoldierDiaryKillsState.cpp" />
     <ClCompile Include="Battlescape\CommendationState.cpp" />
     <ClCompile Include="Ruleset\RuleCommendations.cpp" />
+    <ClCompile Include="Basescape\MedalsInfoState.cpp" />
+    <ClCompile Include="Basescape\SoldierDiaryMissionsState.cpp" />
+    <ClCompile Include="Ruleset\RuleMusic.cpp" />
+    <ClCompile Include="Savegame\SoldierMedals.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1645,6 +1649,10 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Battlescape\CommendationState.h" />
     <ClInclude Include="Ruleset\RuleCommendations.h" />
+    <ClInclude Include="Basescape\MedalsInfoState.h" />
+    <ClInclude Include="Basescape\SoldierDiaryMissionsState.h" />
+    <ClInclude Include="Ruleset\RuleMusic.h" />
+    <ClInclude Include="Savegame\SoldierMedals.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Geoscape">
@@ -1683,5 +1691,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openxcom.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OpenXcom.rc" />
   </ItemGroup>
 </Project>
