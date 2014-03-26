@@ -724,10 +724,10 @@ void Inventory::mouseClick(Action *action, State *state)
 							}
 							else
 							{
-								_warning->showMessage(_game->getLanguage()->getString("STR_GRENADE_IS_DEACTIVATED"));
 								item->setExplodeTurn(-1);  // Unprime the grenade
 								// If the user altered the soldier -> this can only be a custom layout now
 								if (item->getSlot()->getId() != "STR_GROUND") _selUnit->getGeoscapeSoldier()->setEquipmentLayout(0);
+								_warning->showMessage(_game->getLanguage()->getString("STR_GRENADE_IS_DEACTIVATED"));
 							}
 						}
 					}

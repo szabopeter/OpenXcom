@@ -598,6 +598,7 @@ void Soldier::die(SoldierDeath *death)
 	_recentlyPromoted = false;
 	_recovery = 0;
 	setEquipmentLayout(0);
+<<<<<<< HEAD
 }
 
 /**
@@ -632,6 +633,8 @@ void Soldier::addTempKills(std::string alienRank, std::string alienRace, std::st
 void Soldier::clearTempKills()
 {
 	_tempKills.clear();
+=======
+>>>>>>> fenyo1/LayoutManager
 }
 
 }
