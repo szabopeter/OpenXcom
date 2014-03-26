@@ -55,7 +55,7 @@ private:
 	std::vector<Soldier*> _soldiers;
 	std::vector<Craft*> _crafts;
 	std::vector< std::vector<std::string> > _items;
-	std::vector<std::string> _tabs;
+	std::vector<std::wstring> _tabs;
 	std::vector<TextList*> _lists;
 	std::vector<ItemContainer*> _containers;
 	unsigned int _sel;
@@ -72,11 +72,19 @@ private:
 	/// Gets the index of selected item.
 	int getItemIndex(unsigned selected) const;
 	/// Updates the tab index.
-	void updateIndex(size_t &index, std::vector<std::string> &list, int change);
+	void updateIndex(size_t &index, std::vector<std::wstring> &list, int change);
 	/// Adds an item row to a tab.
 	void addRow(ItemContainer *container, std::string item, int tab);
-	/// Switches the currently displayed tab.
-	void switchTab(int change);
+	/// Updates the displayed tab.
+	void updateTab(int direction = 0);
+	/// Changes the quantity of an item by the given value.
+	void changeByValue(int change, int dir);
+	/// Increases the quantity of an item by one.
+	void increase();
+	/// Decreases the quantity of an item by one.
+	void decrease();
+	/// Updates the quantity-strings of the selected item.
+	void updateItemStrings();
 public:
 	/// Creates the Sell state.
 	SellState(Game *game, Base *base, OptionsOrigin origin = OPT_GEOSCAPE);
@@ -108,16 +116,6 @@ public:
 	void lstItemsRightArrowClick(Action *action);
 	/// Handler for pressing-down a mouse-button in the list.
 	void lstItemsMousePress(Action *action);
-	/// Increases the quantity of an item by one.
-	void increase();
-	/// Increases the quantity of an item by the given value.
-	void increaseByValue(int change);
-	/// Decreases the quantity of an item by one.
-	void decrease();
-	/// Decreases the quantity of an item by the given value.
-	void decreaseByValue(int change);
-	/// Updates the quantity-strings of the selected item.
-	void updateItemStrings();
 };
 
 }
