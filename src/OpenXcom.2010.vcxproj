@@ -224,7 +224,6 @@
     <ClCompile Include="Basescape\DismantleFacilityState.cpp" />
     <ClCompile Include="Basescape\ManageAlienContainmentState.cpp" />
     <ClCompile Include="Basescape\ManufactureState.cpp" />
-    <ClCompile Include="Basescape\MedalsInfoState.cpp" />
     <ClCompile Include="Basescape\NewManufactureListState.cpp" />
     <ClCompile Include="Basescape\ManufactureInfoState.cpp" />
     <ClCompile Include="Basescape\MiniBaseView.cpp" />
@@ -242,7 +241,6 @@
     <ClCompile Include="Basescape\SellState.cpp" />
     <ClCompile Include="Basescape\SoldierArmorState.cpp" />
     <ClCompile Include="Basescape\SoldierDiaryInfoState.cpp" />
-    <ClCompile Include="Basescape\SoldierDiaryMissionsState.cpp" />
     <ClCompile Include="Basescape\SoldierDiaryState.cpp" />
     <ClCompile Include="Basescape\SoldierDiaryKillsState.cpp" />
     <ClCompile Include="Basescape\SoldierInfoState.cpp" />
@@ -509,7 +507,6 @@
     <ClInclude Include="Basescape\CraftsState.h" />
     <ClInclude Include="Basescape\CraftWeaponsState.h" />
     <ClInclude Include="Basescape\DismantleFacilityState.h" />
-    <ClInclude Include="Basescape\MedalsInfoState.h" />
     <ClInclude Include="Basescape\NewManufactureListState.h" />
     <ClInclude Include="Basescape\ManageAlienContainmentState.h" />
     <ClInclude Include="Basescape\ManufactureInfoState.h" />
@@ -529,7 +526,6 @@
     <ClInclude Include="Basescape\SellState.h" />
     <ClInclude Include="Basescape\SoldierArmorState.h" />
     <ClInclude Include="Basescape\SoldierDiaryInfoState.h" />
-    <ClInclude Include="Basescape\SoldierDiaryMissionsState.h" />
     <ClInclude Include="Basescape\SoldierDiaryState.h" />
     <ClInclude Include="Basescape\SoldierDiaryKillsState.h" />
     <ClInclude Include="Basescape\SoldierInfoState.h" />

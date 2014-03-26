@@ -505,7 +505,7 @@ void BattlescapeGame::checkForCasualties(BattleItem *murderweapon, BattleUnit *m
 	std::string _weaponAmmo = "STR_WEAPON_UNKNOWN";
 	AlienState _alienState;
 
-		// Fetch the murder weapon
+	// Fetch the murder weapon
 	if (murderer && murderer->getGeoscapeSoldier())
 	{
 		if (murderweapon)
@@ -542,43 +542,36 @@ void BattlescapeGame::checkForCasualties(BattleItem *murderweapon, BattleUnit *m
 	{
 		BattleUnit *victim = (*j);
 		
-		// Decide victim race and rank
-		if (victim->getFaction() == FACTION_HOSTILE) 
-		{
-			// Terrorists don't have a rank... create one
-			if (!victim->getRankString().empty())
-			{
-				_alienRank = victim->getRankString();
-			}
-			else
-			{
-				_alienRank = "STR_LIVE_TERRORIST";
-			}
-
-			// In case of mindcontrolled soldier
-			if (victim->getGeoscapeSoldier())
-			{
-				_alienRace = "STR_HUMAN";
-			}
-			else
-			{
-				_alienRace = victim->getUnitRules()->getRace();
-			}
-		}
-		else if (victim->getFaction() == FACTION_PLAYER && victim->getGeoscapeSoldier())
+		/// Decide victim race and rank
+		// Soldiers
+		if (victim->getGeoscapeSoldier() && victim->getOriginalFaction() == FACTION_PLAYER)
 		{
 			_alienRank = victim->getGeoscapeSoldier()->getRankString();
 			_alienRace = "STR_HUMAN";
 		}
-		else if ((victim->getFaction() == FACTION_PLAYER))
+		// HWPs
+		else if (victim->getOriginalFaction() == FACTION_PLAYER)
 		{
 			_alienRank = "STR_HEAVY_WEAPONS_PLATFORM_LC";
 			_alienRace = "STR_TANK";
 		}
-		else
+		// Aliens
+		else if (victim->getOriginalFaction() == FACTION_HOSTILE)
+		{
+			_alienRank = victim->getUnitRules()->getRank();
+			_alienRace = victim->getUnitRules()->getRace();
+		}
+		// Civilians
+		else if (victim->getOriginalFaction() == FACTION_NEUTRAL)
 		{
 			_alienRank = "STR_CIVILIAN";
 			_alienRace = "STR_HUMAN";
+		}
+		// Error
+		else
+		{
+			_alienRank = "STR_UNKNOWN";
+			_alienRace = "STR_UNKNOWN";
 		}
 		
 		if ((*j)->getHealth() == 0 && (*j)->getStatus() != STATUS_DEAD && (*j)->getStatus() != STATUS_COLLAPSING)
@@ -675,7 +668,10 @@ void BattlescapeGame::checkForCasualties(BattleItem *murderweapon, BattleUnit *m
 		else if ((*j)->getStunlevel() >= (*j)->getHealth() && (*j)->getStatus() != STATUS_DEAD && (*j)->getStatus() != STATUS_UNCONSCIOUS && (*j)->getStatus() != STATUS_COLLAPSING && (*j)->getStatus() != STATUS_TURNING)
 		{
 			_alienState = STUNNED;
-			if (murderer && murderer->getGeoscapeSoldier() && murderer->getFaction() == FACTION_PLAYER) murderer->getGeoscapeSoldier()->addTempKills(_alienRank, _alienRace, _weapon, _weaponAmmo, _alienState);
+			if (murderer && murderer->getGeoscapeSoldier() && murderer->getFaction() == FACTION_PLAYER) 
+			{
+				murderer->getGeoscapeSoldier()->addTempKills(_alienRank, _alienRace, _weapon, _weaponAmmo, _alienState);
+			}
 			statePushNext(new UnitDieBState(this, (*j), DT_STUN, true));
 		}
 	}
