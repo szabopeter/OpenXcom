@@ -2620,7 +2620,7 @@ bool BattleUnit::equipByLayout(Game *game, bool initialEquip)
 			(*i)->setOwner(0);
 			(*i)->setSlotX(0);
 			(*i)->setSlotY(0);
-			(*i)->setExplodeTurn(-1);
+			(*i)->setFuseTimer(-1);
 		}
 		_inventory.clear();
 	}
@@ -2710,7 +2710,6 @@ bool BattleUnit::equipByLayout(Game *game, bool initialEquip)
 		item->setSlot(game->getRuleset()->getInventory((*i)->getSlot()));
 		item->setSlotX((*i)->getSlotX());
 		item->setSlotY((*i)->getSlotY());
-		item->setExplodeTurn((*i)->getExplodeTurn());
 	}
 
 	if (!result)

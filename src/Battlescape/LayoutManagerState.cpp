@@ -550,8 +550,7 @@ void LayoutManagerState::lstSoldiersPress(Action *action)
 						(*j)->getSlot()->getId(),
 						(*j)->getSlotX(),
 						(*j)->getSlotY(),
-						ammo,
-						(*j)->getExplodeTurn()
+						ammo
 					));
 				}
 			}

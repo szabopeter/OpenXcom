@@ -862,10 +862,10 @@ bool BattlescapeGenerator::placeItemByLayout(BattleItem *item)
 		{
 			// skip the vehicles, we need only X-Com soldiers WITH equipment-layout
 			if ((*i)->getArmor()->getSize() > 1 || 0 == (*i)->getGeoscapeSoldier()) continue;
-			if ((*i)->getGeoscapeSoldier()->getEquipmentLayout()->empty()) continue;
+			if (!(*i)->getGeoscapeSoldier()->getEquipmentLayout()) continue;
 
 			// find the first matching layout-slot which is not already occupied
-			std::vector<EquipmentLayoutItem*> *layoutItems = (*i)->getGeoscapeSoldier()->getEquipmentLayout();
+            std::vector<EquipmentLayoutItem*> *layoutItems = (*i)->getGeoscapeSoldier()->getEquipmentLayout()->getItems();
 			for (std::vector<EquipmentLayoutItem*>::iterator j = layoutItems->begin(); j != layoutItems->end(); ++j)
 			{
 				if (item->getRules()->getType() != (*j)->getItemType()

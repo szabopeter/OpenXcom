@@ -69,7 +69,7 @@ void EquipmentLayout::copyLayoutItems(EquipmentLayout *layout)
 	std::vector<EquipmentLayoutItem*> *items = layout->getItems();
 	for (std::vector<EquipmentLayoutItem*>::iterator i = items->begin(); i != items->end(); ++i)
 	{
-		_items.push_back(new EquipmentLayoutItem((*i)->getItemType(), (*i)->getSlot(), (*i)->getSlotX(), (*i)->getSlotY(), (*i)->getAmmoItem(), (*i)->getExplodeTurn()));
+		_items.push_back(new EquipmentLayoutItem((*i)->getItemType(), (*i)->getSlot(), (*i)->getSlotX(), (*i)->getSlotY(), (*i)->getAmmoItem()));
 	}
 }
 
