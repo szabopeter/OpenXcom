@@ -58,6 +58,7 @@
 #include "../Savegame/Vehicle.h"
 #include "../Savegame/TerrorSite.h"
 #include "../Savegame/AlienBase.h"
+#include "../Savegame/EquipmentLayout.h"
 #include "../Savegame/EquipmentLayoutItem.h"
 #include "CivilianBAIState.h"
 #include "AlienBAIState.h"
@@ -455,13 +456,26 @@ void BattlescapeGenerator::deployXCOM()
 		}
 	}
 
-	// equip soldiers based on equipment-layout
-	for (std::vector<BattleItem*>::iterator i = _craftInventoryTile->getInventory()->begin(); i != _craftInventoryTile->getInventory()->end(); ++i)
+	// Save the _craftInventoryTile into the SavedBattleGame, we need that in equipByLayout() !!
+	_save->setCraftInventoryTile(_craftInventoryTile);
+
+	// Equip soldiers based on equipment-layout
+	bool equipByLayoutFailed = false;
+	for (std::vector<BattleUnit*>::iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
 	{
-		placeItemByLayout(*i);
+		// We need only X-Com soldiers
+		if ((*i)->getGeoscapeSoldier() == 0) continue;
+		
+		// Set soldiers with empty layout to the layout of "Newly recruited soldiers"
+		EquipmentLayout *layout = (*i)->getGeoscapeSoldier()->getEquipmentLayout();
+		if (layout == 0 || layout->getItems()->empty()) (*i)->getGeoscapeSoldier()->setEquipmentLayout(_game->getSavedGame()->getNewSoldierLayout());
+
+		// Equip!
+		if (!(*i)->equipByLayout(_game, true)) equipByLayoutFailed = true;
 	}
-	
-	// auto-equip soldiers (only soldiers without layout)
+	_save->setEquipByLayoutFailed(equipByLayoutFailed);
+
+	// auto-equip soldiers (only soldiers without layout -or with an empty layout)
 	for (int pass = 0; pass != 4; ++pass)
 	{
 		for (std::vector<BattleItem*>::iterator j = _craftInventoryTile->getInventory()->begin(); j != _craftInventoryTile->getInventory()->end();)
@@ -498,7 +512,7 @@ void BattlescapeGenerator::deployXCOM()
 				{
 					for (std::vector<BattleUnit*>::iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
 					{
-						if (!(*i)->hasInventory() || !(*i)->getGeoscapeSoldier() || !(*i)->getGeoscapeSoldier()->getEquipmentLayout()->empty())
+						if (!(*i)->hasInventory() || !(*i)->getGeoscapeSoldier() || ((*i)->getGeoscapeSoldier()->getEquipmentLayout() != 0 && !(*i)->getGeoscapeSoldier()->getEquipmentLayout()->getItems()->empty()))
 						{
 							continue;
 						}

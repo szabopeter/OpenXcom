@@ -157,6 +157,7 @@
 #include "./Battlescape/ExplosionBState.h"
 #include "./Battlescape/MedikitView.h"
 #include "./Battlescape/InventoryState.h"
+#include "./Battlescape/LayoutManagerState.h"
 #include "./Battlescape/PromotionsState.h"
 #include "./Battlescape/InfoboxOKState.h"
 #include "./Battlescape/Explosion.h"
@@ -353,6 +354,7 @@
 #include "./Savegame/SerializationHelper.h"
 #include "./Savegame/Soldier.h"
 #include "./Savegame/AlienStrategy.h"
+#include "./Savegame/EquipmentLayout.h"
 #include "./Savegame/EquipmentLayoutItem.h"
 
 #endif
