@@ -347,8 +347,7 @@ void InventoryState::saveEquipmentLayout()
 				(*j)->getSlot()->getId(),
 				(*j)->getSlotX(),
 				(*j)->getSlotY(),
-				ammo,
-				(*j)->getExplodeTurn()
+				ammo
 			));
 		}
 		(*i)->getGeoscapeSoldier()->setEquipmentLayout(layout);

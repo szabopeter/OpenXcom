@@ -162,7 +162,7 @@ void PrimeGrenadeState::btnClick(Action *action)
 	{
 		if (_inInventoryView)
 		{
-			_grenadeInInventory->setExplodeTurn(0 + btnID);
+			_grenadeInInventory->setFuseTimer(0 + btnID);
 			// If the user altered the soldier -> this can only be a custom layout now
 			if (_grenadeInInventory->getSlot()->getId() != "STR_GROUND" && _grenadeInInventory->getOwner() != 0)
 			{
